@@ -44,7 +44,6 @@ dependencies {
     compile 'com.google.firebase:firebase-storage:16.0.1'
     compile 'com.android.support:support-annotations:27.1.1'
     compile 'com.otaliastudios:cameraview:1.5.1'
-    compile 'com.applandeo:material-calendar-view:1.4.0'
     implementation "com.android.support:exifinterface:27.1.1"
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.firebaseui:firebase-ui-auth:4.0.1'

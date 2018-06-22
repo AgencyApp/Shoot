@@ -50,6 +50,8 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:4.0.1'
     implementation 'com.github.jrvansuita:PickImage:+'
     implementation "com.github.prolificinteractive:material-calendarview:1.5.0"
+    compile 'io.nlopez.smartlocation:library:3.3.3'
+    compile 'io.nlopez.smartlocation:rx:3.3.3'
 
 }
 

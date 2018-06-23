@@ -42,7 +42,8 @@
                 android:resource="@xml/picker_provider_paths" />
         </provider>
 
-        <activity android:name=".Activities.CalendarActivity"></activity>
+        <activity android:name=".Activities.CalendarActivity" />
+        <activity android:name=".Activities.AddAppointment"></activity>
     </application>
 
 </manifest>

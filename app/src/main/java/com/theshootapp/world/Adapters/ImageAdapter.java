@@ -49,7 +49,7 @@ public class ImageAdapter extends BaseAdapter {
         }
         if(selectedPositions.contains(position))
         {
-            imageView.setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent), android.graphics.PorterDuff.Mode.MULTIPLY);
+            imageView.setColorFilter(ContextCompat.getColor(mContext, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
 
         }
         else

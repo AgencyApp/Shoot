@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">Shoot</string>
     <string name="save_moments">Save Moments</string>
+    <string name="add_appointment_on_date">Add Appointment</string>
+    <string name="username">Username</string>
+    <string name="enter_username">Enter Username</string>
+    <string name="event_name">Event Name</string>
+    <string name="enter_event_name">Enter Event Name</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="create_appointment">Create Appointment</string>
+    <string name="enter_time">Enter Time</string>
+    <string name="fill_fields">Please fill all the fields</string>
 </resources>

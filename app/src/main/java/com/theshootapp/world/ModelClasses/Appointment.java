@@ -3,9 +3,16 @@ package com.theshootapp.world.ModelClasses;
 public class Appointment {
     private String eventName;
     private String locationName;
-    private String lat;
-    private String lng;
-    private int timestamp;
+    private long dayTimestamp;
+    private String schedularUid;
+    private String otherUid;
+    private String schedularName;
+    private String otherName;
+    private String time;
+
+
+    public Appointment() {
+    }
 
     public String getEventName() {
         return eventName;
@@ -23,46 +30,63 @@ public class Appointment {
         this.locationName = locationName;
     }
 
-    public String getLat() {
-        return lat;
+    public long getDayTimestamp() {
+        return dayTimestamp;
     }
 
-    public void setLat(String lat) {
-        this.lat = lat;
+    public void setDayTimestamp(long dayTimestamp) {
+        this.dayTimestamp = dayTimestamp;
     }
 
-    public String getLng() {
-        return lng;
+    public String getSchedularUid() {
+        return schedularUid;
     }
 
-    public void setLng(String lng) {
-        this.lng = lng;
+    public void setSchedularUid(String schedularUid) {
+        this.schedularUid = schedularUid;
     }
 
-    public Appointment(String eventName, String locationName, String lat, String lng, int timestamp, String personName) {
+    public String getSchedularName() {
+        return schedularName;
+    }
+
+    public void setSchedularName(String schedularName) {
+        this.schedularName = schedularName;
+    }
+
+    public String getOtherName() {
+        return otherName;
+    }
+
+    public String getOtherUid() {
+        return otherUid;
+    }
+
+    public void setOtherUid(String otherUid) {
+        this.otherUid = otherUid;
+    }
+
+    public Appointment(String eventName, String locationName,  long dayTimestamp, String schedularUid, String otherUid, String schedularName, String otherName, String time) {
         this.eventName = eventName;
         this.locationName = locationName;
-        this.lat = lat;
-        this.lng = lng;
-        this.timestamp = timestamp;
-        this.personName = personName;
+        this.dayTimestamp = dayTimestamp;
+        this.schedularUid = schedularUid;
+        this.otherUid = otherUid;
+        this.schedularName = schedularName;
+        this.otherName = otherName;
+        this.time = time;
+
     }
 
-    public int gettimestamp() {
-        return timestamp;
+    public void setOtherName(String otherName) {
+        this.otherName = otherName;
     }
 
-    public void settimestamp(int timestamp) {
-        this.timestamp = timestamp;
+    public String getTime() {
+        return time;
     }
 
-    public String getPersonName() {
-        return personName;
+    public void setTime(String time) {
+        this.time = time;
     }
-
-    public void setPersonName(String personName) {
-        this.personName = personName;
-    }
-
-    String personName;
 }

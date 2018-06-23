@@ -42,7 +42,18 @@
                 android:resource="@xml/picker_provider_paths" />
         </provider>
 
-        <activity android:name=".Activities.CalendarActivity"></activity>
+        <service android:name=".Services.InstanceIdGenerator">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".Services.UserLocation"/>
+
+
+        <activity android:name=".Activities.CalendarActivity" />
+        <activity android:name=".Activities.MainActivity" />
+        <activity android:name=".Activities.mainCallActivity"></activity>
     </application>
 
 </manifest>

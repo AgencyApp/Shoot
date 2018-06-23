@@ -97,6 +97,7 @@
         android:layout_marginStart="16dp"
         android:background="@null"
         android:scaleType="fitCenter"
+        android:onClick="onCallClick"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

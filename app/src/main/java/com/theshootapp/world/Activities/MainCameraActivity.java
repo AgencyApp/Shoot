@@ -162,5 +162,10 @@ public class MainCameraActivity extends AppCompatActivity {
         startActivity(new Intent(this,VideoCameraActivity.class));
     }
 
+    public void onCallClick(View view)
+    {
+        startActivity(new Intent(this,mainCallActivity.class));
+    }
+
 }
 

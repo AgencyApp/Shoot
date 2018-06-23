@@ -1,6 +1,8 @@
 package com.theshootapp.world.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.theshootapp.world.R;
 
 import java.util.Arrays;
@@ -19,38 +23,16 @@ import java.util.Arrays;
 import com.theshootapp.world.ModelClasses.UserProfile;
 
 public class LoginActivity extends AppCompatActivity {
-
+    FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
             // already signed in
-            String uid = auth.getCurrentUser().getUid();
-            DatabaseReference dR = FirebaseDatabase.getInstance().getReference("User").child(uid);
-            dR.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
-                    if(userProfile==null)
-                    {
-                        startActivity(new Intent(LoginActivity.this,UserProfileActivity.class));
-
-                    }
-                    else
-                    {
-                        startActivity(new Intent(LoginActivity.this,MainCameraActivity.class));
-                    }
-                    finish();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+            checkProfile();
         } else {
             startActivityForResult(
                     AuthUI.getInstance()
@@ -70,8 +52,43 @@ public class LoginActivity extends AppCompatActivity {
         if(requestCode==123&&resultCode==RESULT_OK)
         {
             startActivity(new Intent(this,UserProfileActivity.class));
-            finish();
+            DatabaseReference dR = FirebaseDatabase.getInstance().getReference("FCM_InstanceID").child(auth.getUid());
+            dR.setValue(FirebaseInstanceId.getInstance().getToken());
+            checkProfile();
         }
+    }
+
+    void checkProfile()
+    {
+        String uid = auth.getCurrentUser().getUid();
+        DatabaseReference dR = FirebaseDatabase.getInstance().getReference("User").child(uid);
+        dR.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
+                if(userProfile==null)
+                {
+                    startActivity(new Intent(LoginActivity.this,UserProfileActivity.class));
+
+                }
+                else
+                {
+                    SharedPreferences sharedPreferences = getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("UserId",dataSnapshot.getKey());
+                    editor.putString("Phone",userProfile.getPhoneNumber() );
+                    editor.putString("Name",userProfile.getName());
+                    editor.commit();
+                    startActivity(new Intent(LoginActivity.this,MainCameraActivity.class));
+                }
+                finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

@@ -1,6 +1,9 @@
 package com.theshootapp.world.Adapters;
 
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.theshootapp.world.ModelClasses.Appointment;
 import com.theshootapp.world.Interfaces.OnListFragmentInteractionListener;
 import com.theshootapp.world.R;
@@ -25,11 +29,12 @@ public class UsersAppointmentRecyclerViewAdapter extends RecyclerView.Adapter<Us
 
     private final List<Appointment> mValues;
     OnListFragmentInteractionListener mListener;
+    Context context;
 
-
-    public UsersAppointmentRecyclerViewAdapter(List<Appointment> items,  OnListFragmentInteractionListener mListener) {
+    public UsersAppointmentRecyclerViewAdapter(List<Appointment> items,  OnListFragmentInteractionListener mListener,Context c) {
         mValues = items;
         this.mListener = mListener;
+        context = c;
     }
 
     @Override
@@ -43,25 +48,34 @@ public class UsersAppointmentRecyclerViewAdapter extends RecyclerView.Adapter<Us
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValues.get(position);
-        holder.mName.setText(mValues.get(position).getPersonName());
-        holder.mEventName.setText(mValues.get(position).getEventName());
-        Date date = new Date(mValues.get(position).gettimestamp() * 1000);
+        if(mValues.get(position).getSchedularUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+        {
+            holder.mName.setText(mValues.get(position).getOtherName());
 
-        String myFormat = "dd/MM/yy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        holder.mTimeStamp.setText(sdf.format(date));
+        }
+        else
+            holder.mName.setText(mValues.get(position).getSchedularName());
+        //TODO: Set Profile Picture using Glide
+
+        holder.mEventName.setText(mValues.get(position).getEventName());
+        holder.mTimeStamp.setText(mValues.get(position).getTime());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-               /* bundle.putString("receiverUid", mIds.get(position));
-                bundle.putString("receiverName", holder.mItem.getReciverName());
-                mListener.onListFragmentInteraction(bundle, "chatMessage", true);*/
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
+                builderSingle.setTitle("Location").setMessage(holder.mItem.getLocationName());
+                builderSingle.setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderSingle.show();
             }
         });
 
-        //TODO: Set Profile Picture using Glide
+
         //ProfilePicture.setProfilePicture(mIds.get(position), holder.mPicture);
 
 

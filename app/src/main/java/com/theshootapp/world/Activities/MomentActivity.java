@@ -32,7 +32,7 @@ public class MomentActivity extends AppCompatActivity {
     ArrayList<String>momentIdsTobeDeleted;
     long currentTime;
     DatabaseReference databaseReference;
-     ImageAdapter adapter;
+    ImageAdapter adapter;
 
 
     @Override
@@ -62,7 +62,7 @@ public class MomentActivity extends AppCompatActivity {
 
                 } else {
                     adapter.selectedPositions.add(position);
-                    ((ImageView)v).setColorFilter(ContextCompat.getColor(MomentActivity.this, R.color.colorAccent), android.graphics.PorterDuff.Mode.MULTIPLY);
+                    ((ImageView)v).setColorFilter(ContextCompat.getColor(MomentActivity.this, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
 
                 }
             }

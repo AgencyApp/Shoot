@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.theshootapp.world.Activities.MomentActivity;
 import com.theshootapp.world.R;
 
@@ -17,11 +19,16 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<String> mThumbIds;
     public ArrayList<Integer> selectedPositions = new ArrayList<>();
+    FirebaseStorage storage;
 
     public ImageAdapter(Context c, ArrayList<String> mThumbIds) {
         mContext = c;
         this.mThumbIds = mThumbIds;
+
+        storage = FirebaseStorage.getInstance();
     }
+
+
 
     public int getCount() {
         return mThumbIds.size();
@@ -57,7 +64,8 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setColorFilter(null);
 
         }
-        Picasso.get().load(mThumbIds.get(position)).into(imageView);
+        StorageReference ref = storage.getReference().child("Moments/" + mThumbIds.get(position) + ".jpeg");
+        Glide.with(mContext).load(ref).into(imageView);
         return imageView;
     }
 

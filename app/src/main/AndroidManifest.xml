@@ -49,13 +49,18 @@
         </service>
 
         <service android:name=".Services.UserLocation"/>
+        <service android:name=".Services.UserLocation24Hrs"/>
 
 
         <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.MainActivity" />
         <activity android:name=".Activities.mainCallActivity"></activity>
-        <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.AddAppointment"></activity>
+        <activity android:name=".Activities.CallScreenActivity"/>
+        <activity android:name=".Activities.IncomingCallScreenActivity"/>
+        <activity android:name=".Activities.PlaceCallActivity"/>
+        <service android:name=".Services.SinchService"/>
+
     </application>
 
 </manifest>

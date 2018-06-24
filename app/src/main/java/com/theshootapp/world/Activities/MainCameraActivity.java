@@ -9,8 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Facing;
@@ -18,9 +20,12 @@ import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Gesture;
 import com.otaliastudios.cameraview.GestureAction;
 import com.otaliastudios.cameraview.SessionType;
+import com.sinch.android.rtc.SinchError;
 import com.theshootapp.world.ModelClasses.LocationModel;
 import com.theshootapp.world.R;
+import com.theshootapp.world.Services.SinchService;
 import com.theshootapp.world.Services.UserLocation;
+import com.theshootapp.world.Services.UserLocation24Hrs;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,8 +37,9 @@ import io.nlopez.smartlocation.SmartLocation;
 
 import static java.security.AccessController.getContext;
 
-public class MainCameraActivity extends AppCompatActivity {
+public class MainCameraActivity extends BaseActivity implements SinchService.StartFailedListener {
     CameraView cameraView;
+    boolean  callClicked;
     private boolean isFlashOn;
     private boolean isFrontFacing;
     UserLocation userLocation;
@@ -43,8 +49,11 @@ public class MainCameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         getSupportActionBar().hide();
-        Intent serviceIntent=new Intent(this,UserLocation.class);
+       // Intent serviceIntent=new Intent(this,UserLocation.class);
+        //startService(serviceIntent);
+        Intent serviceIntent=new Intent(this,UserLocation24Hrs.class);
         startService(serviceIntent);
+
         cameraView = (CameraView)findViewById(R.id.camera);
         cameraView.setSessionType(SessionType.PICTURE);
         cameraView.mapGesture(Gesture.PINCH, GestureAction.ZOOM); // Pinch to zoom!
@@ -53,6 +62,7 @@ public class MainCameraActivity extends AppCompatActivity {
         isFrontFacing=false;
         cameraView.setFlash(Flash.OFF);
         isFlashOn=false;
+        callClicked=false;
         cameraView.setPlaySounds(false);
         cameraView.addCameraListener(new CameraListener() {
             @Override
@@ -166,6 +176,51 @@ public class MainCameraActivity extends AppCompatActivity {
     {
         startActivity(new Intent(this,mainCallActivity.class));
     }
+
+    @Override
+    public void onStartFailed(SinchError error) {
+        Toast.makeText(this, "ServiceFalied", Toast.LENGTH_LONG);
+    }
+
+
+    @Override
+    public void onStarted() {
+        if (callClicked) {
+            callClicked = false;
+            openPlaceCallActivity();
+        }
+    }
+    @Override
+    protected void onServiceConnected() {
+        getSinchServiceInterface().setStartListener(MainCameraActivity.this);
+    }
+    private void callClicked() {
+        String userName = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        callClicked = true;
+
+        if (userName.isEmpty()) {
+            Toast.makeText(this, "Please enter a name", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!userName.equals(getSinchServiceInterface().getUserName())) {
+            getSinchServiceInterface().stopClient();
+        }
+
+        if (!getSinchServiceInterface().isStarted()) {
+            getSinchServiceInterface().startClient(userName);
+            // showSpinner();
+        } else {
+            openPlaceCallActivity();
+        }
+    }
+
+    private void openPlaceCallActivity() {
+        Intent mainActivity = new Intent(this, mainCallActivity.class);
+        startActivity(mainActivity);
+    }
+
+
 
 }
 

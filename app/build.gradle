@@ -52,6 +52,7 @@ dependencies {
     compile 'io.nlopez.smartlocation:library:3.3.3'
     compile 'io.nlopez.smartlocation:rx:3.3.3'
     implementation 'com.google.firebase:firebase-messaging:17.0.0'
+    compile project(':sinch-android-rtc-3.12.4')
 
 }
 

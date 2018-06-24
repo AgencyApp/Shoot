@@ -1,6 +1,8 @@
 package com.theshootapp.world.Activities;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -34,6 +36,9 @@ public class mainCallActivity extends AppCompatActivity {
     DatabaseReference friends;
     HashMap<String,User> userMap;
     String currentUId;
+    String currentUserName;
+    String cuid;// temporary to be remove
+    SharedPreferences sharedPreferences;
 
 
 
@@ -48,6 +53,8 @@ public class mainCallActivity extends AppCompatActivity {
         currentUId=FirebaseAuth.getInstance().getUid();
         friends=FirebaseDatabase.getInstance().getReference().child("UserFriends").child(currentUId);
         UpdateShootFriend();
+        sharedPreferences=getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+        currentUserName=sharedPreferences.getString("Name","Name not Found");
     }
 
 
@@ -207,5 +214,21 @@ public class mainCallActivity extends AppCompatActivity {
     {
         TextView textView=findViewById(R.id.number);
         textView.setText(userMap.get(uid).getName());
+        cuid=uid;
+    }
+
+    public void onCallClick(View view)
+    {
+
+        makeCall(userMap.get(cuid).getName(),userMap.get(cuid).getUserId());
+    }
+
+    void makeCall(String receiverName, String receiverUid)
+    {
+        Intent intent = new Intent(this, PlaceCallActivity.class);
+        intent.putExtra("receiverId", receiverUid);
+        intent.putExtra("receiverName", receiverName);
+        intent.putExtra("callerName", currentUserName);
+        startActivity(intent);
     }
 }

@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#37474f</color>
     <color name="colorAccent">#4a148c</color>
     <color name="colorGrey">#9e9e9e</color>
+    <color name="colorBackground">#cfd8dc</color>
+    <color name="sinch_purple">#ff63029d</color>
+    <color name="off_white">#fffafafa</color>
+    <color name="greyish">#fff2f1f2</color>
 </resources>

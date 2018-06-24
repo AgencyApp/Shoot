@@ -40,16 +40,11 @@ public class MomentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moment);
         currentTime=System.currentTimeMillis() / 1000;
-        databaseReference=FirebaseDatabase.getInstance().getReference().child("UserMoments").child(FirebaseAuth.getInstance().getUid());
+        databaseReference=FirebaseDatabase.getInstance().getReference().child("UserMoment").child(FirebaseAuth.getInstance().getUid());
         setTitle("Moments");
-        ArrayList<String> url = new ArrayList<>();
-        url.add("http://via.placeholder.com/350x350");
-        url.add("http://via.placeholder.com/350x350");
-        url.add("http://via.placeholder.com/350x350");
-        url.add("http://via.placeholder.com/350x350");
-        url.add("http://via.placeholder.com/350x350");
+        momentIds = new ArrayList<>();
         GridView gridview = (GridView) findViewById(R.id.gridview);
-        adapter = new ImageAdapter(this,url);
+        adapter = new ImageAdapter(this,momentIds);
         gridview.setAdapter(adapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -67,6 +62,7 @@ public class MomentActivity extends AppCompatActivity {
                 }
             }
         });
+        fetchMoments();
 
     }
 

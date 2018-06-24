@@ -7,7 +7,11 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.annotation.Nullable;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.theshootapp.world.ModelClasses.LocationModel;
@@ -37,7 +41,8 @@ public class UserLocation extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        locationReference= FirebaseDatabase.getInstance().getReference().child("UserLocation").child(FirebaseAuth.getInstance().getUid());
+        locationReference= FirebaseDatabase.getInstance().getReference().child("UserLocation");
+        final GeoFire geoFire = new GeoFire(locationReference);
         long mLocTrackingInterval = 1000 * 60; // 5 sec
         float trackingDistance = 10f;
         LocationAccuracy trackingAccuracy = LocationAccuracy.HIGH;
@@ -56,7 +61,14 @@ public class UserLocation extends IntentService {
                 editor.putString("longitude",String.valueOf(location.getLongitude()) );
                 editor.putString("latitude",String.valueOf(location.getLatitude()) );
                 editor.commit();
-                locationReference.setValue(locationModel);
+                //locationReference.setValue(locationModel);
+                geoFire.setLocation(FirebaseAuth.getInstance().getUid(), new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
+                    @Override
+                    public void onComplete(String key, DatabaseError error) {
+
+                    }
+                });
+
             }
         });
     }

@@ -80,7 +80,7 @@ public class mainCallActivity extends AppCompatActivity {
                    Number= Number.replaceFirst("00","+");
                 }
 
-                    isShootUser(Number);
+                isShootUser(Number);
 
 
             }
@@ -130,7 +130,7 @@ public class mainCallActivity extends AppCompatActivity {
         });
     }
 
-     void isShootUser(String number)
+    void isShootUser(String number)
     {
         userReference.orderByChild("phoneNumber").equalTo(number).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -143,7 +143,7 @@ public class mainCallActivity extends AppCompatActivity {
                 }
                 if(uID==null||uID.equals(""))
                 {
-                    DisplayAlert("The Number you Enter is not a Shoot User");
+                    DisplayAlert("The Number you Entered is not a Shoot User");
                 }
                 else if(uID.equals(currentUId))
                 {

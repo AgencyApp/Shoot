@@ -64,7 +64,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_fiber_manual_record_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_add_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -74,8 +74,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ff000c" />
-                            <entry key="outputName" value="ic_fiber_manual_record_red_24dp" />
+                            <entry key="color" value="ffffff" />
+                            <entry key="outputName" value="ic_add_white_24dp" />
                             <entry key="sourceFile" value="C:\Users\abdul" />
                           </map>
                         </option>

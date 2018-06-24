@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.theshootapp.world.ModelClasses.Appointment;
 import com.theshootapp.world.Interfaces.OnListFragmentInteractionListener;
 import com.theshootapp.world.R;
@@ -30,11 +33,13 @@ public class UsersAppointmentRecyclerViewAdapter extends RecyclerView.Adapter<Us
     private final List<Appointment> mValues;
     OnListFragmentInteractionListener mListener;
     Context context;
+    FirebaseStorage storage;
 
     public UsersAppointmentRecyclerViewAdapter(List<Appointment> items,  OnListFragmentInteractionListener mListener,Context c) {
         mValues = items;
         this.mListener = mListener;
         context = c;
+        storage=FirebaseStorage.getInstance();
     }
 
     @Override
@@ -51,10 +56,14 @@ public class UsersAppointmentRecyclerViewAdapter extends RecyclerView.Adapter<Us
         if(mValues.get(position).getSchedularUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
         {
             holder.mName.setText(mValues.get(position).getOtherName());
-
+            StorageReference ref = storage.getReference().child("UserDP/" + mValues.get(position).getOtherUid() + ".jpg");
+            Glide.with(context).load(ref).into(holder.mPicture);
         }
-        else
+        else {
             holder.mName.setText(mValues.get(position).getSchedularName());
+            StorageReference ref = storage.getReference().child("UserDP/" + mValues.get(position).getSchedularUid() + ".jpg");
+            Glide.with(context).load(ref).into(holder.mPicture);
+        }
         //TODO: Set Profile Picture using Glide
 
         holder.mEventName.setText(mValues.get(position).getEventName());

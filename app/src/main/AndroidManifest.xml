@@ -52,9 +52,7 @@
 
 
         <activity android:name=".Activities.CalendarActivity" />
-        <activity android:name=".Activities.MainActivity" />
         <activity android:name=".Activities.mainCallActivity"></activity>
-        <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.AddAppointment"></activity>
     </application>
 

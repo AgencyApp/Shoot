@@ -51,7 +51,7 @@ public class CalendarActivity extends AppCompatActivity implements OnListFragmen
         recyclerView = findViewById(R.id.appointmentsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        recyclerView.setAdapter(adapter = new UsersAppointmentRecyclerViewAdapter(appointments, mListener = this,this));
+        recyclerView.setAdapter(adapter = new UsersAppointmentRecyclerViewAdapter(appointments,this));
 
        simpleCalendarView = (MaterialCalendarView) findViewById(R.id.simpleCalendarView);
                 simpleCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {

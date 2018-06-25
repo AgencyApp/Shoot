@@ -31,13 +31,11 @@ import java.util.Locale;
 public class UsersAppointmentRecyclerViewAdapter extends RecyclerView.Adapter<UsersAppointmentRecyclerViewAdapter.ViewHolder> {
 
     private final List<Appointment> mValues;
-    OnListFragmentInteractionListener mListener;
     Context context;
     FirebaseStorage storage;
 
-    public UsersAppointmentRecyclerViewAdapter(List<Appointment> items,  OnListFragmentInteractionListener mListener,Context c) {
+    public UsersAppointmentRecyclerViewAdapter(List<Appointment> items, Context c) {
         mValues = items;
-        this.mListener = mListener;
         context = c;
         storage=FirebaseStorage.getInstance();
     }

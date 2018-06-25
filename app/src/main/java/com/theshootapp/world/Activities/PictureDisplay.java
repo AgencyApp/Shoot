@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -108,6 +109,7 @@ public class PictureDisplay extends AppCompatActivity {
 
             }
         });
+        Toast.makeText(this, "Shooting Picture!", Toast.LENGTH_SHORT).show();
         finish();
     }
 

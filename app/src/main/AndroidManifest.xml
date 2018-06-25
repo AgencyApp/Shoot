@@ -47,19 +47,19 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
-        <service android:name=".Services.UserLocation"/>
-        <service android:name=".Services.UserLocation24Hrs"/>
-
+        <service android:name=".Services.UserLocation" />
+        <service android:name=".Services.UserLocation24Hrs" />
 
         <activity android:name=".Activities.CalendarActivity" />
-        <activity android:name=".Activities.mainCallActivity"></activity>
-        <activity android:name=".Activities.AddAppointment"></activity>
-        <activity android:name=".Activities.CallScreenActivity"/>
-        <activity android:name=".Activities.IncomingCallScreenActivity"/>
-        <activity android:name=".Activities.PlaceCallActivity"/>
-        <service android:name=".Services.SinchService"/>
+        <activity android:name=".Activities.mainCallActivity" />
+        <activity android:name=".Activities.AddAppointment" />
+        <activity android:name=".Activities.CallScreenActivity" />
+        <activity android:name=".Activities.IncomingCallScreenActivity" />
+        <activity android:name=".Activities.PlaceCallActivity" />
 
+        <service android:name=".Services.SinchService" />
+
+        <activity android:name=".Activities.PhoneActivity" />
     </application>
 
 </manifest>

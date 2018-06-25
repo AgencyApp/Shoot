@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,6 +23,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.theshootapp.world.Adapters.AllUsersCallRecyclerViewAdapter;
+import com.theshootapp.world.Interfaces.OnListFragmentInteractionListener;
 import com.theshootapp.world.ModelClasses.User;
 import com.theshootapp.world.ModelClasses.UserProfile;
 import com.theshootapp.world.R;
@@ -29,32 +33,40 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class mainCallActivity extends AppCompatActivity {
+public class mainCallActivity extends AppCompatActivity implements OnListFragmentInteractionListener {
     AlertDialog.Builder alert;
     AlertDialog.Builder alertError;
     DatabaseReference userReference;
     DatabaseReference friends;
-    HashMap<String,User> userMap;
+    ArrayList<User> userMap;
     String currentUId;
     String currentUserName;
     String cuid;// temporary to be remove
     SharedPreferences sharedPreferences;
+    private AllUsersCallRecyclerViewAdapter adapter;
+    OnListFragmentInteractionListener mListener;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_call);
+        setContentView(R.layout.activity_all_users_for_call);
         alert = new AlertDialog.Builder(this);
         alertError = new AlertDialog.Builder(this);
-        userMap=new HashMap<>();
+        userMap=new ArrayList<>();
         userReference= FirebaseDatabase.getInstance().getReference().child("User");
         currentUId=FirebaseAuth.getInstance().getUid();
         friends=FirebaseDatabase.getInstance().getReference().child("UserFriends").child(currentUId);
         UpdateShootFriend();
         sharedPreferences=getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
         currentUserName=sharedPreferences.getString("Name","Name not Found");
+
+        mListener = this;
+        RecyclerView recyclerView = findViewById(R.id.call_user_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new AllUsersCallRecyclerViewAdapter(userMap, this, mListener);
+        recyclerView.setAdapter(adapter);
     }
 
 
@@ -79,10 +91,7 @@ public class mainCallActivity extends AppCompatActivity {
                 {
                    Number= Number.replaceFirst("00","+");
                 }
-
                 isShootUser(Number);
-
-
             }
         });
 
@@ -102,7 +111,7 @@ public class mainCallActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 boolean flag=dataSnapshot.getValue(Boolean.class);
                 if(flag==true) {
-                    if (!userMap.containsKey(dataSnapshot.getKey())) {
+                    if (!userMap.contains(dataSnapshot.getKey())) {
                         FetchUser(dataSnapshot.getKey());
                     }
                 }
@@ -149,7 +158,7 @@ public class mainCallActivity extends AppCompatActivity {
                 {
                     DisplayAlert("This is Your Own Number");
                 }
-                else if(userMap.containsKey(uID))
+                else if(userMap.contains(new User(uID,"","")))
                 {
                     DisplayAlert("The User already exists");
                 }
@@ -157,8 +166,8 @@ public class mainCallActivity extends AppCompatActivity {
                 {
                     UserProfile userProfile=dS.getValue(UserProfile.class);
                     friends.child(uID).setValue(true);
-                    userMap.put(uID,new User(uID,userProfile.getPhoneNumber(),userProfile.getName()));
-                    updateUi(uID);//TODO remove this function through proper UI
+                    userMap.add(new User(uID,userProfile.getPhoneNumber(),userProfile.getName()));
+                    //updateUi(uID);//TODO remove this function through proper UI
 
                 }
 
@@ -199,8 +208,8 @@ public class mainCallActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
                 User user= new User(dataSnapshot.getKey(),userProfile.getPhoneNumber(),userProfile.getName());
-                userMap.put(user.getUserId(),user);
-                updateUi(user.getUserId());//TODO remove this function through proper UI
+                userMap.add(user);
+                adapter.notifyDataSetChanged();
 
             }
 
@@ -210,25 +219,15 @@ public class mainCallActivity extends AppCompatActivity {
             }
         });
     }
-    void updateUi(String uid)
-    {
-        TextView textView=findViewById(R.id.number);
-        textView.setText(userMap.get(uid).getName());
-        cuid=uid;
-    }
 
-    public void onCallClick(View view)
-    {
 
-        makeCall(userMap.get(cuid).getName(),userMap.get(cuid).getUserId());
-    }
-
-    void makeCall(String receiverName, String receiverUid)
-    {
+    @Override
+    public void onListFragmentInteraction(Bundle details, String action, boolean isFabClicked) {
         Intent intent = new Intent(this, PlaceCallActivity.class);
-        intent.putExtra("receiverId", receiverUid);
-        intent.putExtra("receiverName", receiverName);
+        intent.putExtra("receiverId", details.getString("receiverUid"));
+        intent.putExtra("receiverName", details.getString("receiverName"));
         intent.putExtra("callerName", currentUserName);
         startActivity(intent);
+        finish();
     }
 }

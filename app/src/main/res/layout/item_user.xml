@@ -22,7 +22,7 @@
             android:layout_marginTop="8dp"
             android:src="@drawable/logo"
             app:civ_border_color="@color/colorPrimary"
-            app:civ_border_width="2dp"
+            app:civ_border_width="0.5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />

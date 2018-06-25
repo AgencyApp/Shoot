@@ -113,6 +113,12 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         startActivity(new Intent(this,CalendarActivity.class));
     }
 
+    public void onCallClick(View view)
+    {
+        startActivity(new Intent(this,PhoneActivity.class));
+    }
+
+
     public String writeToFile(byte[] array)
     {
         try
@@ -172,10 +178,6 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         startActivity(new Intent(this,VideoCameraActivity.class));
     }
 
-    public void onCallClick(View view)
-    {
-        startActivity(new Intent(this,mainCallActivity.class));
-    }
 
     @Override
     public void onStartFailed(SinchError error) {

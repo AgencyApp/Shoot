@@ -12,4 +12,10 @@
     <string name="create_appointment">Create Appointment</string>
     <string name="enter_time">Enter Time</string>
     <string name="fill_fields">Please fill all the fields</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="category_call">Call</string>
+    <string name="category_suggestions">Suggestions</string>
+    <string name="category_appointments">Appointments</string>
 </resources>

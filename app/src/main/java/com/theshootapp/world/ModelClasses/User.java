@@ -18,6 +18,19 @@ public class User {
     public User() {
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof User)
+            return userId.equals(((User)obj).getUserId());
+        return false;
+
+    }
+
     public String getUserId() {
         return userId;
     }

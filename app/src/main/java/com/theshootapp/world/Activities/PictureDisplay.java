@@ -22,6 +22,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.otaliastudios.cameraview.CameraUtils;
+import com.theshootapp.world.Database.FileDataBase;
+import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.ModelClasses.Moment;
 import com.theshootapp.world.R;
 
@@ -33,11 +35,13 @@ import java.io.IOException;
 public class PictureDisplay extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
+    FileDataBase fileDataBase;
     double longitude;
     double latitude;
     String path;
     Bitmap img;
     StorageReference storageReference;
+    File imgFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +54,10 @@ public class PictureDisplay extends AppCompatActivity {
         temp=sharedPreferences.getString("latitude","0");
         latitude=Double.parseDouble(temp);
         storageReference= FirebaseStorage.getInstance().getReference();
+        fileDataBase=FileDataBase.getAppDatabase(this);
         Intent i=getIntent();
         path=i.getStringExtra("image");
-        File imgFile = new  File(path);
+        imgFile = new  File(path);
 
         if(imgFile.exists()) {
             byte[] b = new byte[(int) imgFile.length()];
@@ -77,6 +82,8 @@ public class PictureDisplay extends AppCompatActivity {
 
 
         }
+
+
     }
     public void onShootClick(View view)
     {
@@ -106,11 +113,20 @@ public class PictureDisplay extends AppCompatActivity {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
                 momentRef.setValue(moment);
+                imgFile.delete();
+                Toast.makeText(PictureDisplay.this, "Shooting Picture!", Toast.LENGTH_SHORT).show();
 
             }
         });
-        Toast.makeText(this, "Shooting Picture!", Toast.LENGTH_SHORT).show();
+
         finish();
+    }
+
+    void addPicToStorage()
+    {
+        MyFile myFile=new MyFile();
+        myFile.setFileName(path);
+        fileDataBase.fileDao().insertAll();
     }
 
 }

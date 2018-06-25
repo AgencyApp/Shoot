@@ -1,7 +1,9 @@
 package com.theshootapp.world.Activities;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -21,6 +23,7 @@ import com.otaliastudios.cameraview.Gesture;
 import com.otaliastudios.cameraview.GestureAction;
 import com.otaliastudios.cameraview.SessionType;
 import com.sinch.android.rtc.SinchError;
+import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.ModelClasses.LocationModel;
 import com.theshootapp.world.R;
 import com.theshootapp.world.Services.SinchService;
@@ -43,7 +46,9 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     private boolean isFlashOn;
     private boolean isFrontFacing;
     UserLocation userLocation;
-
+    SharedPreferences sharedPreferences;
+    long fileId;
+    String fileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +58,11 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         //startService(serviceIntent);
         Intent serviceIntent=new Intent(this,UserLocation24Hrs.class);
         startService(serviceIntent);
-
+        sharedPreferences=getSharedPreferences("FileId", Context.MODE_PRIVATE);
+        fileId=sharedPreferences.getLong("fileId",0l);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putLong("fileId",fileId+1);
+        fileName="file"+String.valueOf(fileId)+".jpeg";
         cameraView = (CameraView)findViewById(R.id.camera);
         cameraView.setSessionType(SessionType.PICTURE);
         cameraView.mapGesture(Gesture.PINCH, GestureAction.ZOOM); // Pinch to zoom!
@@ -123,7 +132,7 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     {
         try
         {
-            String path = "picture.jpeg";
+            String path = fileName;
 
             File file = new File(getFilesDir(), path);
             if (!file.exists()) {

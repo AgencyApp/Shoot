@@ -1,5 +1,6 @@
 package com.theshootapp.world.Activities;
 
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,30 +22,42 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.otaliastudios.cameraview.CameraUtils;
 import com.theshootapp.world.Adapters.ImageAdapter;
+import com.theshootapp.world.Database.FileDataBase;
+import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.R;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MomentActivity extends AppCompatActivity {
 
-    ArrayList<String>momentIds;
-    ArrayList<String>momentIdsTobeDeleted;
+    ArrayList<String> momentIds;
+    ArrayList<String> momentIdsTobeDeleted;
     long currentTime;
     DatabaseReference databaseReference;
     ImageAdapter adapter;
+    ArrayList<MyFile> storagePictures;
+    FileDataBase fileDataBase;
+    ArrayList<Bitmap> storageImages;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moment);
-        currentTime=System.currentTimeMillis() / 1000;
-        databaseReference=FirebaseDatabase.getInstance().getReference().child("UserMoment").child(FirebaseAuth.getInstance().getUid());
+        currentTime = System.currentTimeMillis() / 1000;
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("UserMoment").child(FirebaseAuth.getInstance().getUid());
         setTitle("Moments");
         momentIds = new ArrayList<>();
+        storagePictures = new ArrayList<>();
         GridView gridview = (GridView) findViewById(R.id.gridview);
-        adapter = new ImageAdapter(this,momentIds);
+        fileDataBase = FileDataBase.getAppDatabase(this);
+        storageImages = new ArrayList<>();
+        adapter = new ImageAdapter(this, momentIds);
         gridview.setAdapter(adapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -53,11 +66,11 @@ public class MomentActivity extends AppCompatActivity {
                 int selectedIndex = adapter.selectedPositions.indexOf(position);
                 if (selectedIndex > -1) {
                     adapter.selectedPositions.remove(selectedIndex);
-                    ((ImageView)v).setColorFilter(null);
+                    ((ImageView) v).setColorFilter(null);
 
                 } else {
                     adapter.selectedPositions.add(position);
-                    ((ImageView)v).setColorFilter(ContextCompat.getColor(MomentActivity.this, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
+                    ((ImageView) v).setColorFilter(ContextCompat.getColor(MomentActivity.this, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
 
                 }
             }
@@ -87,20 +100,17 @@ public class MomentActivity extends AppCompatActivity {
 
         }
     }
-    void fetchMoments()
-    {
+
+    void fetchMoments() {
 
         databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                long momentTimeStamp=dataSnapshot.getValue(Long.class);
-                if((currentTime-momentTimeStamp)<86400)
-                {
+                long momentTimeStamp = dataSnapshot.getValue(Long.class);
+                if ((currentTime - momentTimeStamp) < 86400) {
                     momentIds.add(dataSnapshot.getKey());
                     adapter.notifyDataSetChanged();
-                }
-                else
-                {
+                } else {
                     deleteMovement(dataSnapshot.getKey());
                 }
             }
@@ -127,9 +137,43 @@ public class MomentActivity extends AppCompatActivity {
         });
     }
 
-    void deleteMovement(String key)
-    {
-        DatabaseReference dR=databaseReference.child(key);
+    void deleteMovement(String key) {
+        DatabaseReference dR = databaseReference.child(key);
         dR.removeValue();
     }
+
+    void fetchImagesfromStorage() {
+        storagePictures = (ArrayList<MyFile>) fileDataBase.fileDao().getAll();
+        for (int i = 0; i < storagePictures.size(); i++) {
+            getFileBitMap(storagePictures.get(i));
+        }
+
+    }
+
+    void getFileBitMap(MyFile myFile) {
+        File imgFile = new File(myFile.getFileName());
+
+        if (imgFile.exists()) {
+            byte[] b = new byte[(int) imgFile.length()];
+            try {
+                FileInputStream fileInputStream = new FileInputStream(imgFile);
+                fileInputStream.read(b);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+            final ImageView myImage = (ImageView) findViewById(R.id.imageView);
+
+            // myImage.setImageBitmap(myBitmap);
+            CameraUtils.decodeBitmap(b, new CameraUtils.BitmapCallback() {
+                @Override
+                public void onBitmapReady(Bitmap bitmap) {
+                    storageImages.add(bitmap);
+                    //or populate a image view;
+                }
+            });
+        }
+    }
+
 }

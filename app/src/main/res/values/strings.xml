@@ -18,4 +18,6 @@
     <string name="category_call">Call</string>
     <string name="category_suggestions">Suggestions</string>
     <string name="category_appointments">Appointments</string>
+    <string name="shoot_pictures">Shoot Pictures</string>
+    <string name="view_saved">View Saved</string>
 </resources>

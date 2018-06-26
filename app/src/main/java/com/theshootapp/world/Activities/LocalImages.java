@@ -1,8 +1,6 @@
 package com.theshootapp.world.Activities;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -14,10 +12,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.otaliastudios.cameraview.CameraUtils;
 import com.theshootapp.world.Adapters.ImageAdapter;
+import com.theshootapp.world.Adapters.LocalImageAdapter;
 import com.theshootapp.world.Database.FileDataBase;
 import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.R;
@@ -34,13 +31,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MomentActivity extends AppCompatActivity {
+public class LocalImages extends AppCompatActivity {
 
-    ArrayList<String> momentIds;
     ArrayList<String> momentIdsTobeDeleted;
     long currentTime;
     DatabaseReference databaseReference;
-    ImageAdapter adapter;
+    LocalImageAdapter adapter;
     ArrayList<MyFile> storagePictures;
     FileDataBase fileDataBase;
     ArrayList<Bitmap> storageImages;
@@ -49,16 +45,14 @@ public class MomentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_moment);
+        setContentView(R.layout.activity_local_images);
         currentTime = System.currentTimeMillis() / 1000;
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("UserMoment").child(FirebaseAuth.getInstance().getUid());
-        setTitle("Moments");
-        momentIds = new ArrayList<>();
+        setTitle("Saved Media");;
         storagePictures = new ArrayList<>();
         GridView gridview = (GridView) findViewById(R.id.gridview);
         fileDataBase = FileDataBase.getAppDatabase(this);
         storageImages = new ArrayList<>();
-        adapter = new ImageAdapter(this, momentIds);
+        adapter = new LocalImageAdapter(this, storageImages);
         gridview.setAdapter(adapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -71,30 +65,26 @@ public class MomentActivity extends AppCompatActivity {
 
                 } else {
                     adapter.selectedPositions.add(position);
-                    ((ImageView) v).setColorFilter(ContextCompat.getColor(MomentActivity.this, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
+                    ((ImageView) v).setColorFilter(ContextCompat.getColor(LocalImages.this, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
 
                 }
             }
         });
-        fetchMoments();
+        fetchImagesfromStorage();
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_moment, menu);
+        getMenuInflater().inflate(R.menu.menu_local_images, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
-            case R.id.local_icon:
-                startActivity(new Intent(this,LocalImages.class));
-                return true;
-            case R.id.download_icon:
+            case R.id.shoot_icon:
                 return true;
 
 
@@ -106,47 +96,35 @@ public class MomentActivity extends AppCompatActivity {
         }
     }
 
-    void fetchMoments() {
 
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                long momentTimeStamp = dataSnapshot.getValue(Long.class);
-                if ((currentTime - momentTimeStamp) < 86400) {
-                    momentIds.add(dataSnapshot.getKey());
-                    adapter.notifyDataSetChanged();
-                } else {
-                    deleteMovement(dataSnapshot.getKey());
+    void fetchImagesfromStorage() {
+        storagePictures = (ArrayList<MyFile>) fileDataBase.fileDao().getAll();
+        for (int i = 0; i < storagePictures.size(); i++) {
+            getFileBitMap(storagePictures.get(i));
+        }
+
+    }
+
+    void getFileBitMap(MyFile myFile) {
+        File imgFile = new File(myFile.getFileName());
+
+        if (imgFile.exists()) {
+            byte[] b = new byte[(int) imgFile.length()];
+            try {
+                FileInputStream fileInputStream = new FileInputStream(imgFile);
+                fileInputStream.read(b);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            CameraUtils.decodeBitmap(b, new CameraUtils.BitmapCallback() {
+                @Override
+                public void onBitmapReady(Bitmap bitmap) {
+                    storageImages.add(bitmap);
+                    //or populate a image view;
                 }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+            });
+        }
     }
-
-    void deleteMovement(String key) {
-        DatabaseReference dR = databaseReference.child(key);
-        dR.removeValue();
-    }
-
-
 
 }

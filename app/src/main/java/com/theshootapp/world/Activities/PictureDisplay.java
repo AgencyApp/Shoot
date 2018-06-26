@@ -26,6 +26,7 @@ import com.theshootapp.world.Database.FileDataBase;
 import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.ModelClasses.Moment;
 import com.theshootapp.world.R;
+import com.theshootapp.world.Utility.OnSwipeTouchListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,6 +44,8 @@ public class PictureDisplay extends AppCompatActivity {
     StorageReference storageReference;
     File imgFile;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,7 @@ public class PictureDisplay extends AppCompatActivity {
         Intent i=getIntent();
         path=i.getStringExtra("image");
         imgFile = new  File(path);
+
 
         if(imgFile.exists()) {
             byte[] b = new byte[(int) imgFile.length()];
@@ -80,12 +84,28 @@ public class PictureDisplay extends AppCompatActivity {
                 }
             });
 
+            myImage.setOnTouchListener(new OnSwipeTouchListener(this) {
+                public void onSwipeTop() {
+                    onShootClick();
+                }
+                public void onSwipeRight() {
+
+                }
+                public void onSwipeLeft() {
+                    addPicToStorage();
+                }
+                public void onSwipeBottom() {
+
+                }
+
+            });
+
 
         }
 
 
     }
-    public void onShootClick(View view)
+    public void onShootClick()
     {
         Long ts = System.currentTimeMillis() / 1000;
         final Moment moment=new Moment(FirebaseAuth.getInstance().getUid(),longitude,latitude,ts);
@@ -124,9 +144,11 @@ public class PictureDisplay extends AppCompatActivity {
 
     void addPicToStorage()
     {
+        Toast.makeText(PictureDisplay.this, "Saving Picture", Toast.LENGTH_SHORT).show();
         MyFile myFile=new MyFile();
         myFile.setFileName(path);
         fileDataBase.fileDao().insertAll();
+        finish();
     }
 
 }

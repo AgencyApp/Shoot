@@ -20,4 +20,5 @@
     <string name="category_appointments">Appointments</string>
     <string name="shoot_pictures">Shoot Pictures</string>
     <string name="view_saved">View Saved</string>
+    <string name="add_contact">Add Contact</string>
 </resources>

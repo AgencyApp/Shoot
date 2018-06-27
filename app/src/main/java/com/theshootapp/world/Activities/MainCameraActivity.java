@@ -62,6 +62,8 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         fileId=sharedPreferences.getLong("fileId",0l);
         SharedPreferences.Editor editor=sharedPreferences.edit();
         editor.putLong("fileId",fileId+1);
+        editor.apply();
+
         fileName="file"+String.valueOf(fileId)+".jpeg";
         cameraView = (CameraView)findViewById(R.id.camera);
         cameraView.setSessionType(SessionType.PICTURE);
@@ -125,6 +127,11 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     public void onCallClick(View view)
     {
         startActivity(new Intent(this,PhoneActivity.class));
+    }
+
+    public void onShootClick(View view)
+    {
+        startActivity(new Intent(this,LocalImages.class));
     }
 
 

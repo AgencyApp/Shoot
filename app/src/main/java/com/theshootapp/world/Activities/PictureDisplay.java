@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class PictureDisplay extends AppCompatActivity {
 
@@ -145,10 +147,31 @@ public class PictureDisplay extends AppCompatActivity {
     void addPicToStorage()
     {
         Toast.makeText(PictureDisplay.this, "Saving Picture", Toast.LENGTH_SHORT).show();
-        MyFile myFile=new MyFile();
-        myFile.setFileName(path);
-        fileDataBase.fileDao().insertAll();
+        new DatabaseAsyncTask(this).execute();
         finish();
+    }
+
+    public class DatabaseAsyncTask extends AsyncTask {
+        Context c;
+
+        DatabaseAsyncTask(Context con)
+        {
+            c = con;
+        }
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            MyFile myFile=new MyFile();
+            myFile.setFileName(path);
+            fileDataBase.fileDao().insertAll(myFile);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            Toast.makeText(c, "Picture Saved!", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

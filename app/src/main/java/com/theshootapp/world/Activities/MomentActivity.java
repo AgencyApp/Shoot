@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.otaliastudios.cameraview.CameraUtils;
 import com.theshootapp.world.Adapters.ImageAdapter;
+import com.theshootapp.world.Adapters.CustomView;
 import com.theshootapp.world.Database.FileDataBase;
 import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.R;
@@ -67,12 +68,11 @@ public class MomentActivity extends AppCompatActivity {
                 int selectedIndex = adapter.selectedPositions.indexOf(position);
                 if (selectedIndex > -1) {
                     adapter.selectedPositions.remove(selectedIndex);
-                    ((ImageView) v).setColorFilter(null);
+                    ((CustomView)v).display(false);
 
                 } else {
                     adapter.selectedPositions.add(position);
-                    ((ImageView) v).setColorFilter(ContextCompat.getColor(MomentActivity.this, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
-
+                     ((CustomView)v).display(true);
                 }
             }
         });

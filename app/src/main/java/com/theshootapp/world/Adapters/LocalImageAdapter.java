@@ -41,28 +41,9 @@ public class LocalImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
-        if (convertView == null) {
-            // if it's not recycled, initialize some attributes
-            imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(230, 230));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(0, 0, 0, 0);
-        } else {
-            imageView = (ImageView) convertView;
-        }
-        if(selectedPositions.contains(position))
-        {
-            imageView.setColorFilter(ContextCompat.getColor(mContext, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
-
-        }
-        else
-        {
-            imageView.setColorFilter(null);
-
-        }
-        imageView.setImageBitmap(mThumbIds.get(position));
-
-        return imageView;
+        LocalImageCustomView customView = (convertView == null) ?
+                new LocalImageCustomView(mContext) : (LocalImageCustomView) convertView;
+        customView.display(mThumbIds.get(position), selectedPositions.contains(position));
+        return customView;
     }
 }

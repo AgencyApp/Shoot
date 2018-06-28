@@ -10,6 +10,8 @@
 
     <uses-feature android:name="android.hardware.camera" />
 
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -61,6 +63,10 @@
 
         <activity android:name=".Activities.PhoneActivity" />
         <activity android:name=".Activities.LocalImages"></activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA9UxtRN9OnOFC1hZublM3T1Rdcsz53V3c"/>
     </application>
 
 </manifest>

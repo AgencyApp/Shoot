@@ -7,12 +7,14 @@ package com.theshootapp.world.ModelClasses;
 public class Moment {
     String ownerId;
     double longitude;
+    boolean isVideo;
     double latitude;
     long timeStamp;
 
-    public Moment(String ownerId, double longitude, double latitude, long timeStamp) {
+    public Moment(String ownerId, double longitude, boolean isVideo, double latitude, long timeStamp) {
         this.ownerId = ownerId;
         this.longitude = longitude;
+        this.isVideo = isVideo;
         this.latitude = latitude;
         this.timeStamp = timeStamp;
     }
@@ -50,5 +52,13 @@ public class Moment {
 
     public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public boolean isVideo() {
+        return isVideo;
+    }
+
+    public void setVideo(boolean video) {
+        isVideo = video;
     }
 }

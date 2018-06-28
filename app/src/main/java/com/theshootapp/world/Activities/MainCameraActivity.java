@@ -58,13 +58,6 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         //startService(serviceIntent);
         Intent serviceIntent=new Intent(this,UserLocation24Hrs.class);
         startService(serviceIntent);
-        sharedPreferences=getSharedPreferences("FileId", Context.MODE_PRIVATE);
-        fileId=sharedPreferences.getLong("fileId",0l);
-        SharedPreferences.Editor editor=sharedPreferences.edit();
-        editor.putLong("fileId",fileId+1);
-        editor.apply();
-
-        fileName="file"+String.valueOf(fileId)+".jpeg";
         cameraView = (CameraView)findViewById(R.id.camera);
         cameraView.setSessionType(SessionType.PICTURE);
         cameraView.mapGesture(Gesture.PINCH, GestureAction.ZOOM); // Pinch to zoom!
@@ -100,6 +93,7 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     }
     public void onPicClick(View view)
     {
+        updateFileName();
         cameraView.capturePicture();
     }
     public void imageCaptured(byte[] jpeg) {
@@ -236,6 +230,16 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     private void openPlaceCallActivity() {
         Intent mainActivity = new Intent(this, mainCallActivity.class);
         startActivity(mainActivity);
+    }
+
+    void updateFileName()
+    {
+        sharedPreferences=getSharedPreferences("FileId", Context.MODE_PRIVATE);
+        fileId=sharedPreferences.getLong("fileId",0l);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putLong("fileId",fileId+1);
+        editor.commit();
+        fileName="file"+String.valueOf(fileId)+".jpeg";
     }
 
 

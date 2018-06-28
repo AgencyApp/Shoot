@@ -67,11 +67,11 @@ public class PictureDisplay extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
             final ImageView myImage = (ImageView) findViewById(R.id.imageView);
 
-           // myImage.setImageBitmap(myBitmap);
+            // myImage.setImageBitmap(myBitmap);
             CameraUtils.decodeBitmap(b, new CameraUtils.BitmapCallback() {
                 @Override
                 public void onBitmapReady(Bitmap bitmap) {

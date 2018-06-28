@@ -20,6 +20,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
+import io.nlopez.smartlocation.location.providers.LocationManagerProvider;
 
 /**
  * Created by hamza on 24-Jun-18.
@@ -54,7 +55,7 @@ public class UserLocation24Hrs extends Service {
                 .setDistance(trackingDistance)
                 .setInterval(mLocTrackingInterval);
 
-        SmartLocation.with(getApplicationContext()).location().continuous().config(builder.build()).start(new OnLocationUpdatedListener() {
+        SmartLocation.with(getApplicationContext()).location(new LocationManagerProvider()).continuous().config(builder.build()).start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
                 LocationModel locationModel = new LocationModel(location.getLongitude(), location.getLatitude());

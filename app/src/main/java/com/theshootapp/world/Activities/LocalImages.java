@@ -170,7 +170,7 @@ public class LocalImages extends AppCompatActivity {
     public void shootPicture(String path)
     {
         Long ts = System.currentTimeMillis() / 1000;
-        final Moment moment=new Moment(FirebaseAuth.getInstance().getUid(),longitude,latitude,ts);
+        final Moment moment=new Moment(FirebaseAuth.getInstance().getUid(),longitude,false,latitude,ts);
         final DatabaseReference momentRef=FirebaseDatabase.getInstance().getReference().child("Moments").push();
         String key=momentRef.getKey();
         StorageReference momentStorageRef = storageReference.child("Moments/"+key+".jpeg");

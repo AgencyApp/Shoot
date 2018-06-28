@@ -45,13 +45,8 @@ public class SuggestionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_suggestions, container, false);
+        View view= inflater.inflate(R.layout.fragment_suggestions, container, false);
 
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         sharedPreferences =this.getActivity().getSharedPreferences("Suggestions",Context.MODE_PRIVATE);
         userReference= FirebaseDatabase.getInstance().getReference().child("User");
         currentUId=FirebaseAuth.getInstance().getUid();
@@ -62,7 +57,12 @@ public class SuggestionsFragment extends Fragment {
         {
             getSuggestion();
         }
+
+        return view;
+
     }
+
+
 
     void getSuggestion()
     {

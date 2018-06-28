@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,11 +27,13 @@ import com.theshootapp.world.Database.FileDataBase;
 import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.ModelClasses.Moment;
 import com.theshootapp.world.R;
+import com.theshootapp.world.Utility.OnSwipeTouchListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class PictureDisplay extends AppCompatActivity {
 
@@ -42,6 +45,8 @@ public class PictureDisplay extends AppCompatActivity {
     Bitmap img;
     StorageReference storageReference;
     File imgFile;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class PictureDisplay extends AppCompatActivity {
         Intent i=getIntent();
         path=i.getStringExtra("image");
         imgFile = new  File(path);
+
 
         if(imgFile.exists()) {
             byte[] b = new byte[(int) imgFile.length()];
@@ -80,12 +86,28 @@ public class PictureDisplay extends AppCompatActivity {
                 }
             });
 
+            myImage.setOnTouchListener(new OnSwipeTouchListener(this) {
+                public void onSwipeTop() {
+                    onShootClick();
+                }
+                public void onSwipeRight() {
+
+                }
+                public void onSwipeLeft() {
+                    addPicToStorage();
+                }
+                public void onSwipeBottom() {
+
+                }
+
+            });
+
 
         }
 
 
     }
-    public void onShootClick(View view)
+    public void onShootClick()
     {
         Long ts = System.currentTimeMillis() / 1000;
         final Moment moment=new Moment(FirebaseAuth.getInstance().getUid(),longitude,latitude,ts);
@@ -124,9 +146,32 @@ public class PictureDisplay extends AppCompatActivity {
 
     void addPicToStorage()
     {
-        MyFile myFile=new MyFile();
-        myFile.setFileName(path);
-        fileDataBase.fileDao().insertAll();
+        Toast.makeText(PictureDisplay.this, "Saving Picture", Toast.LENGTH_SHORT).show();
+        new DatabaseAsyncTask(this).execute();
+        finish();
+    }
+
+    public class DatabaseAsyncTask extends AsyncTask {
+        Context c;
+
+        DatabaseAsyncTask(Context con)
+        {
+            c = con;
+        }
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            MyFile myFile=new MyFile();
+            myFile.setFileName(path);
+            fileDataBase.fileDao().insertAll(myFile);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            Toast.makeText(c, "Picture Saved!", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

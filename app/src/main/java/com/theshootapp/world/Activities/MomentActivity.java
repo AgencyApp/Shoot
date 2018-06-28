@@ -1,5 +1,6 @@
 package com.theshootapp.world.Activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.otaliastudios.cameraview.CameraUtils;
 import com.theshootapp.world.Adapters.ImageAdapter;
+import com.theshootapp.world.Adapters.CustomView;
 import com.theshootapp.world.Database.FileDataBase;
 import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.R;
@@ -66,12 +68,11 @@ public class MomentActivity extends AppCompatActivity {
                 int selectedIndex = adapter.selectedPositions.indexOf(position);
                 if (selectedIndex > -1) {
                     adapter.selectedPositions.remove(selectedIndex);
-                    ((ImageView) v).setColorFilter(null);
+                    ((CustomView)v).display(false);
 
                 } else {
                     adapter.selectedPositions.add(position);
-                    ((ImageView) v).setColorFilter(ContextCompat.getColor(MomentActivity.this, R.color.colorGrey), android.graphics.PorterDuff.Mode.MULTIPLY);
-
+                     ((CustomView)v).display(true);
                 }
             }
         });
@@ -89,6 +90,10 @@ public class MomentActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+            case R.id.local_icon:
+                startActivity(new Intent(this,LocalImages.class));
+                return true;
             case R.id.download_icon:
                 return true;
 
@@ -142,38 +147,6 @@ public class MomentActivity extends AppCompatActivity {
         dR.removeValue();
     }
 
-    void fetchImagesfromStorage() {
-        storagePictures = (ArrayList<MyFile>) fileDataBase.fileDao().getAll();
-        for (int i = 0; i < storagePictures.size(); i++) {
-            getFileBitMap(storagePictures.get(i));
-        }
 
-    }
-
-    void getFileBitMap(MyFile myFile) {
-        File imgFile = new File(myFile.getFileName());
-
-        if (imgFile.exists()) {
-            byte[] b = new byte[(int) imgFile.length()];
-            try {
-                FileInputStream fileInputStream = new FileInputStream(imgFile);
-                fileInputStream.read(b);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-            final ImageView myImage = (ImageView) findViewById(R.id.imageView);
-
-            // myImage.setImageBitmap(myBitmap);
-            CameraUtils.decodeBitmap(b, new CameraUtils.BitmapCallback() {
-                @Override
-                public void onBitmapReady(Bitmap bitmap) {
-                    storageImages.add(bitmap);
-                    //or populate a image view;
-                }
-            });
-        }
-    }
 
 }

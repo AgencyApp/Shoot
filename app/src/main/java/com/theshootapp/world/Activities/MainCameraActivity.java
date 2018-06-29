@@ -27,6 +27,7 @@ import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.ModelClasses.LocationModel;
 import com.theshootapp.world.R;
 import com.theshootapp.world.Services.SinchService;
+import com.theshootapp.world.Services.SuggestionFetcher;
 import com.theshootapp.world.Services.UserLocation;
 import com.theshootapp.world.Services.UserLocation24Hrs;
 
@@ -58,6 +59,8 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         //startService(serviceIntent);
         Intent serviceIntent=new Intent(this,UserLocation24Hrs.class);
         startService(serviceIntent);
+        //Intent suggestionIntent=new Intent(this, SuggestionFetcher.class);
+        //startService(suggestionIntent);
         cameraView = (CameraView)findViewById(R.id.camera);
         cameraView.setSessionType(SessionType.PICTURE);
         cameraView.mapGesture(Gesture.PINCH, GestureAction.ZOOM); // Pinch to zoom!

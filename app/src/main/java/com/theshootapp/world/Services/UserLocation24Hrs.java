@@ -46,8 +46,8 @@ public class UserLocation24Hrs extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         locationReference= FirebaseDatabase.getInstance().getReference().child("UserLocation");
         final GeoFire geoFire = new GeoFire(locationReference);
-        long mLocTrackingInterval = 1000 * 60; // 5 sec
-        float trackingDistance = 10f;
+        long mLocTrackingInterval = 0; // 5 sec
+        float trackingDistance = 0;
         LocationAccuracy trackingAccuracy = LocationAccuracy.HIGH;
 
         LocationParams.Builder builder = new LocationParams.Builder()

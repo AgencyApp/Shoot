@@ -1,6 +1,9 @@
 package com.theshootapp.world.Activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -38,11 +41,16 @@ import com.theshootapp.world.ModelClasses.Appointment;
 import com.theshootapp.world.ModelClasses.LocationModel;
 import com.theshootapp.world.ModelClasses.UserProfile;
 import com.theshootapp.world.R;
+import com.theshootapp.world.Services.AppointmentNotificationService;
 
 
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+
+import static java.util.Calendar.HOUR_OF_DAY;
 
 
 public class AddAppointment extends AppCompatActivity {
@@ -100,7 +108,7 @@ public class AddAppointment extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Calendar mCurrentTime = Calendar.getInstance();
-                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                int hour = mCurrentTime.get(HOUR_OF_DAY);
                 int minute = mCurrentTime.get(Calendar.MINUTE);
 
                 TimePickerDialog mTimePicker;
@@ -194,6 +202,44 @@ public class AddAppointment extends AppCompatActivity {
 
                         DatabaseReference userAppointmentRef2 = firebaseDatabase.getReference("UserAppointment/"+mUsername+"/" + dayTimestamp + "/" + appointmentRef.getKey());
                         userAppointmentRef2.setValue(true);
+
+                        Bundle dataBundle = new Bundle();
+                        dataBundle.putString("userId",mUsername);
+                        dataBundle.putDouble("appointmentLatitude",mLoc.latitude);
+                        dataBundle.putDouble("appointmentLongitude",mLoc.longitude);
+                        dataBundle.putString("userName",otherName);
+                        dataBundle.putInt("count",0);
+
+
+                        Intent intent1 = new Intent(AddAppointment.this, AppointmentNotificationService.class);
+                        intent1.putExtra("data",dataBundle);
+
+                        Calendar c = Calendar.getInstance();
+                        c.setTimeInMillis(dayTimestamp);
+
+                        SimpleDateFormat df = new SimpleDateFormat("kk:mm");
+                        Date d1 = null;
+                        try {
+                            d1 = df.parse(mTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(d1);
+
+                        int hours = calendar.get(HOUR_OF_DAY);
+                        int minutes = calendar.get(Calendar.MINUTE);
+                        int seconds = calendar.get(Calendar.SECOND);
+
+                        c.set(HOUR_OF_DAY,hours);
+                        c.set(Calendar.MINUTE,minutes);
+                        c.set(Calendar.SECOND,seconds);
+
+
+                        PendingIntent pintent = PendingIntent.getService(AddAppointment.this, 0, intent1, 0);
+                        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                        alarm.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pintent);
 
                         Toast.makeText(AddAppointment.this, "Appointment Created", Toast.LENGTH_SHORT).show();
                         

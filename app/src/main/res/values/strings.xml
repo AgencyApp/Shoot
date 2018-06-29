@@ -21,4 +21,6 @@
     <string name="shoot_pictures">Shoot Pictures</string>
     <string name="view_saved">View Saved</string>
     <string name="add_contact">Add Contact</string>
+    <string name="channel_name">Channel01</string>
+    <string name="channel_description">Notification Channel</string>
 </resources>

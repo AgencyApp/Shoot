@@ -9,6 +9,8 @@ public class Appointment {
     private String schedularName;
     private String otherName;
     private String time;
+    private Double lat;
+    private Double lng;
 
 
     public Appointment() {
@@ -46,6 +48,22 @@ public class Appointment {
         this.schedularUid = schedularUid;
     }
 
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
+    }
+
     public String getSchedularName() {
         return schedularName;
     }
@@ -66,7 +84,7 @@ public class Appointment {
         this.otherUid = otherUid;
     }
 
-    public Appointment(String eventName, String locationName,  long dayTimestamp, String schedularUid, String otherUid, String schedularName, String otherName, String time) {
+    public Appointment(String eventName, String locationName, long dayTimestamp, String schedularUid, String otherUid, String schedularName, String otherName, String time, Double lat, Double lng) {
         this.eventName = eventName;
         this.locationName = locationName;
         this.dayTimestamp = dayTimestamp;
@@ -75,7 +93,8 @@ public class Appointment {
         this.schedularName = schedularName;
         this.otherName = otherName;
         this.time = time;
-
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public void setOtherName(String otherName) {

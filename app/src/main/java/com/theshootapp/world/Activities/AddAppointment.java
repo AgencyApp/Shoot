@@ -1,7 +1,11 @@
 package com.theshootapp.world.Activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +19,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.data.model.User;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,18 +38,27 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import com.theshootapp.world.ModelClasses.Appointment;
+import com.theshootapp.world.ModelClasses.LocationModel;
 import com.theshootapp.world.ModelClasses.UserProfile;
 import com.theshootapp.world.R;
+import com.theshootapp.world.Services.AppointmentNotificationService;
 
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+
+import static java.util.Calendar.HOUR_OF_DAY;
 
 
 public class AddAppointment extends AppCompatActivity {
 
     EditText eventName;
     EditText time;
-    EditText location;
+    TextView location;
+    LatLng loc;
     Long dateTimestamp;
     FirebaseDatabase firebaseDatabase;
     String currentUid;
@@ -50,6 +69,7 @@ public class AddAppointment extends AppCompatActivity {
     ArrayAdapter<com.theshootapp.world.ModelClasses.User> userSpinnerAdapter;
     ArrayList <com.theshootapp.world.ModelClasses.User>userFriends;
     int userSelected = 0;
+    static int PLACE_PICKER_REQUEST = 1;
 
 
     @Override
@@ -88,7 +108,7 @@ public class AddAppointment extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Calendar mCurrentTime = Calendar.getInstance();
-                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                int hour = mCurrentTime.get(HOUR_OF_DAY);
                 int minute = mCurrentTime.get(Calendar.MINUTE);
 
                 TimePickerDialog mTimePicker;
@@ -118,6 +138,29 @@ public class AddAppointment extends AppCompatActivity {
 
     }
 
+    public void selectLocation(View v)
+    {
+
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(this,data);
+                location.setText(place.getName());
+                loc = place.getLatLng();
+            }
+        }
+    }
+
     public void addAppointment(View v)
     {
         //final String mUsername = username.getText().toString();
@@ -125,9 +168,10 @@ public class AddAppointment extends AppCompatActivity {
         final String mEventName = eventName.getText().toString();
         final String mTime = time.getText().toString();
         final String mLocation = location.getText().toString();
+        final LatLng mLoc = loc;
         final long dayTimestamp = dateTimestamp;
 
-        if(userSelected==0 || TextUtils.isEmpty(mEventName) || TextUtils.isEmpty(mTime) || TextUtils.isEmpty(mLocation))
+        if(userSelected==0 || TextUtils.isEmpty(mEventName) || TextUtils.isEmpty(mTime) || mLoc==null)
         {
             Snackbar snackbar = Snackbar
                     .make(findViewById(R.id.add_appointment), R.string.fill_fields, Snackbar.LENGTH_LONG);
@@ -149,7 +193,7 @@ public class AddAppointment extends AppCompatActivity {
                         UserProfile user = dataSnapshot.getValue(UserProfile.class);
                         String currentName = user.getName();
 
-                        Appointment appointment = new Appointment(mEventName,mLocation,dayTimestamp,currentUid,mUsername,currentName,otherName,mTime);
+                        Appointment appointment = new Appointment(mEventName,mLocation,dayTimestamp,currentUid,mUsername,currentName,otherName,mTime,mLoc.latitude,mLoc.longitude);
                         DatabaseReference appointmentRef = firebaseDatabase.getReference("Appointment").push();
                         appointmentRef.setValue(appointment);
 
@@ -158,6 +202,44 @@ public class AddAppointment extends AppCompatActivity {
 
                         DatabaseReference userAppointmentRef2 = firebaseDatabase.getReference("UserAppointment/"+mUsername+"/" + dayTimestamp + "/" + appointmentRef.getKey());
                         userAppointmentRef2.setValue(true);
+
+                        Bundle dataBundle = new Bundle();
+                        dataBundle.putString("userId",mUsername);
+                        dataBundle.putDouble("appointmentLatitude",mLoc.latitude);
+                        dataBundle.putDouble("appointmentLongitude",mLoc.longitude);
+                        dataBundle.putString("userName",otherName);
+                        dataBundle.putInt("count",0);
+
+
+                        Intent intent1 = new Intent(AddAppointment.this, AppointmentNotificationService.class);
+                        intent1.putExtra("data",dataBundle);
+
+                        Calendar c = Calendar.getInstance();
+                        c.setTimeInMillis(dayTimestamp);
+
+                        SimpleDateFormat df = new SimpleDateFormat("kk:mm");
+                        Date d1 = null;
+                        try {
+                            d1 = df.parse(mTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(d1);
+
+                        int hours = calendar.get(HOUR_OF_DAY);
+                        int minutes = calendar.get(Calendar.MINUTE);
+                        int seconds = calendar.get(Calendar.SECOND);
+
+                        c.set(HOUR_OF_DAY,hours);
+                        c.set(Calendar.MINUTE,minutes);
+                        c.set(Calendar.SECOND,seconds);
+
+
+                        PendingIntent pintent = PendingIntent.getService(AddAppointment.this, 0, intent1, 0);
+                        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                        alarm.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pintent);
 
                         Toast.makeText(AddAppointment.this, "Appointment Created", Toast.LENGTH_SHORT).show();
                         

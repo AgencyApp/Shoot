@@ -7,9 +7,14 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-feature android:name="android.hardware.camera" />
+
+
 
     <application
         android:allowBackup="true"
@@ -49,7 +54,7 @@
         </service>
         <service android:name=".Services.UserLocation" />
         <service android:name=".Services.UserLocation24Hrs" />
-
+        <service android:name=".Services.AppointmentNotificationService"/>
         <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.mainCallActivity" />
         <activity android:name=".Activities.AddAppointment" />
@@ -63,6 +68,11 @@
         <activity android:name=".Activities.LocalImages" />
 
 
+        <activity android:name=".Activities.LocalImages"></activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA9UxtRN9OnOFC1hZublM3T1Rdcsz53V3c"/>
     </application>
 
 </manifest>

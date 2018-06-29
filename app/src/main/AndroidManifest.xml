@@ -62,9 +62,7 @@
         <activity android:name=".Activities.PhoneActivity" />
         <activity android:name=".Activities.LocalImages" />
 
-        <service
-            android:name=".Services.SuggestionFetcher"
-            android:exported="false"></service>
+
     </application>
 
 </manifest>

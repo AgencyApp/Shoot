@@ -12,9 +12,11 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -76,7 +78,10 @@ public class AppointmentNotificationService extends Service {
 
                 StringBuilder response = new StringBuilder();
 
-                URL url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + location.latitude + "," + location.longitude + "&destinations=" + latitude + "," + longitude + "&key=AIzaSyBknB7x4WpceoNpF1ykv0cJUeRJE7vqO-w");
+                String url1 = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + location.latitude + "," + location.longitude + "&destinations=" + latitude + "," + longitude + "&key=AIzaSyBknB7x4WpceoNpF1ykv0cJUeRJE7vqO-w";
+                Log.d("URL",url1);
+                URL url = new URL(url1);
+
                 final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK)
@@ -100,10 +105,15 @@ public class AppointmentNotificationService extends Service {
                 JSONObject distOb = newDisTimeOb.getJSONObject("distance");
                 JSONObject timeOb = newDisTimeOb.getJSONObject("duration");
 
+
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
+                int notification_id = preferences.getInt("notification_id", 0);
+
+
                 // Create an explicit intent for an Activity in your app
                 Intent intent = new Intent(c, PhoneActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                PendingIntent pendingIntent = PendingIntent.getActivity(c, 0, intent, 0);
+                PendingIntent pendingIntent = PendingIntent.getActivity(c, notification_id, intent, 0);
 
                 if(Double.parseDouble(distOb.getString("value"))<=50)
                 {
@@ -139,9 +149,15 @@ public class AppointmentNotificationService extends Service {
                 Intent intent1 = new Intent(AppointmentNotificationService.this, AppointmentNotificationService.class);
                 intent1.putExtra("data",dataBundle);
 
-                PendingIntent pintent = PendingIntent.getService(AppointmentNotificationService.this, 0, intent1, 0);
+
+
+                PendingIntent pintent = PendingIntent.getService(AppointmentNotificationService.this, notification_id+1, intent1, 0);
                 AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                 alarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+ 300*1000, pintent);
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("notification_id",notification_id+2);
+                editor.apply();
 
 
 

@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,8 +38,10 @@ public class SuggestionsFragment extends Fragment {
     DatabaseReference suggestions;
     String currentUId;
     HashMap<String,Boolean> userMap;
+    HashMap<String,Boolean> userSuggestionMap;
     DatabaseReference friends;
-    ArrayList<UserProfile> userProfiles;
+    ArrayList<String> userProfiles;
+    ArrayList<User>userSuggestions;
     public SuggestionsFragment() {
     }
 
@@ -50,13 +54,23 @@ public class SuggestionsFragment extends Fragment {
         sharedPreferences =this.getActivity().getSharedPreferences("Suggestions",Context.MODE_PRIVATE);
         userReference= FirebaseDatabase.getInstance().getReference().child("User");
         currentUId=FirebaseAuth.getInstance().getUid();
+        userMap=new HashMap<>();
+        userSuggestionMap=new HashMap<>();
+        userProfiles=new ArrayList<>();
         friends=FirebaseDatabase.getInstance().getReference().child("UserFriends").child(currentUId);
         suggestions=FirebaseDatabase.getInstance().getReference().child("Suggestions").child(currentUId);
         boolean fetchContact=sharedPreferences.getBoolean("fetchContact",false);
-        if(!fetchContact)
+        new Async().execute();
+        FetchSuggestions();
+       /* if(!fetchContact)
         {
-            getSuggestion();
+            getShootFriends();
         }
+        else
+        {
+            getShootFriends();
+        }
+*/
 
         return view;
 
@@ -87,6 +101,14 @@ public class SuggestionsFragment extends Fragment {
                     while (pCur.moveToNext()) {
                         String phoneNo = pCur.getString(pCur.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        if(phoneNo.startsWith("03"))
+                        {
+                            phoneNo= phoneNo.replaceFirst("0","+92");
+                        }
+                        else if(phoneNo.startsWith("00"))
+                        {
+                           phoneNo= phoneNo.replaceFirst("00","+");
+                        }
                         isShootUser(phoneNo);
 
                     }
@@ -97,6 +119,7 @@ public class SuggestionsFragment extends Fragment {
         if(cur!=null){
             cur.close();
         }
+        getShootFriends();
 
     }
 
@@ -125,9 +148,9 @@ public class SuggestionsFragment extends Fragment {
                 }
                 else if(dS!=null)
                 {
-                    UserProfile userProfile=dS.getValue(UserProfile.class);
-                    suggestions.child(uID).child("true");
-                    userProfiles.add(userProfile);
+                   // UserProfile userProfile=dS.getValue(UserProfile.class);
+                    //suggestions.child(uID).child("true");
+                    userProfiles.add(dS.getKey());
 
                 }
 
@@ -155,6 +178,100 @@ public class SuggestionsFragment extends Fragment {
 
                     }
                 }
+                uploadSuggestions();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    public class Async extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            getSuggestion();
+            return null;
+        }
+    }
+
+    void uploadSuggestions()
+    {
+        suggestions.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot :dataSnapshot.getChildren()) {
+
+                    if(snapshot.getValue(Boolean.class)==true)
+                    {
+                        userSuggestionMap.put(snapshot.getKey(),true);
+
+                    }
+                }
+
+                for(int i=0;i<userProfiles.size();i++)
+                {
+                    if(!userSuggestionMap.containsKey(userProfiles.get(i))&&!userMap.containsKey(userProfiles.get(i)))
+                    {
+                        suggestions.child(userProfiles.get(i)).setValue("true");
+                    }
+                }
+                FetchSuggestions();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    void FetchSuggestions()
+    {
+        suggestions.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.getValue(Boolean.class))
+                {
+                    FetchUser(dataSnapshot.getKey());
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    void FetchUser(String key)
+    {
+        userReference.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
+                User user= new User(dataSnapshot.getKey(),userProfile.getPhoneNumber(),userProfile.getName());
+                userSuggestions.add(user);
+               // adapter.notifyDataSetChanged();
+
             }
 
             @Override

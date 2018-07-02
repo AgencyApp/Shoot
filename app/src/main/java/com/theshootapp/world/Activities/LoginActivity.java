@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==123&&resultCode==RESULT_OK)
         {
-            startActivity(new Intent(this,UserProfileActivity.class));
             DatabaseReference dR = FirebaseDatabase.getInstance().getReference("FCM_InstanceID").child(auth.getUid());
             dR.setValue(FirebaseInstanceId.getInstance().getToken());
             checkProfile();

@@ -16,6 +16,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -49,6 +51,7 @@ public class SuggestionsFragment extends Fragment implements OnListFragmentInter
     ArrayList<User>userSuggestions;
     private SuggestionsRecyclerViewAdapter adapter;
     OnListFragmentInteractionListener mListener;
+    ProgressBar progressBar;
 
     public SuggestionsFragment() {
     }
@@ -60,6 +63,18 @@ public class SuggestionsFragment extends Fragment implements OnListFragmentInter
         View view= inflater.inflate(R.layout.fragment_suggestions, container, false);
         mListener = this;
 
+
+
+        progressBar = view.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
+        ImageButton button = view.findViewById(R.id.refreshButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
+                new Async().execute();
+            }
+        });
         sharedPreferences =this.getActivity().getSharedPreferences("Suggestions",Context.MODE_PRIVATE);
         userReference= FirebaseDatabase.getInstance().getReference().child("User");
         currentUId=FirebaseAuth.getInstance().getUid();
@@ -75,17 +90,13 @@ public class SuggestionsFragment extends Fragment implements OnListFragmentInter
         adapter = new SuggestionsRecyclerViewAdapter(userSuggestions, getActivity(), mListener);
         recyclerView.setAdapter(adapter);
 
-        new Async().execute();
+
         FetchSuggestions();
 
 
         if(!fetchContact)
         {
-            getShootFriends();
-        }
-        else
-        {
-            getShootFriends();
+            new Async().execute();
         }
 
 
@@ -237,6 +248,10 @@ public class SuggestionsFragment extends Fragment implements OnListFragmentInter
 
                     }
                 }
+                SharedPreferences.Editor ed = sharedPreferences.edit();
+                ed.putBoolean("fetchContact",true);
+                ed.apply();
+
 
                 for(int i=0;i<userProfiles.size();i++)
                 {
@@ -245,6 +260,7 @@ public class SuggestionsFragment extends Fragment implements OnListFragmentInter
                         suggestions.child(userProfiles.get(i)).setValue(true);
                     }
                 }
+                progressBar.setVisibility(View.INVISIBLE);
                 FetchSuggestions();
 
             }

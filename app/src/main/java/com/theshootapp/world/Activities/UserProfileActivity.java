@@ -102,6 +102,7 @@ public class UserProfileActivity extends AppCompatActivity implements IPickResul
                 UserProfile userProfile=new UserProfile(Name.getText().toString(),firebaseUser.getPhoneNumber());
                 userProfileRef.setValue(userProfile);
                 startActivity(new Intent(UserProfileActivity.this,MainCameraActivity.class));
+                finish();
             }
         });
     }

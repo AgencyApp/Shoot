@@ -57,7 +57,7 @@ public class CustomView extends FrameLayout {
                 final Moment moment1 = dataSnapshot.getValue(Moment.class);
                 if(moment1.isVideo())
                 {
-                    StorageReference ref = storage.getReference().child("Moments/" + url + ".mp4");
+                    /*StorageReference ref = storage.getReference().child("Moments/" + url + ".mp4");
                     ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
@@ -68,7 +68,9 @@ public class CustomView extends FrameLayout {
                         public void onFailure(@NonNull Exception exception) {
                             // Handle any errors
                         }
-                    });
+                    });*/
+                    StorageReference ref = storage.getReference().child("Thumbnails/" + url + ".jpeg");
+                    Glide.with(c).load(ref).into(imageView);
 
                 }
                 else{

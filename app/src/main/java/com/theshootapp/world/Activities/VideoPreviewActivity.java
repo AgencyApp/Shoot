@@ -4,7 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import com.google.firebase.storage.UploadTask;
 import com.theshootapp.world.ModelClasses.Moment;
 import com.theshootapp.world.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class VideoPreviewActivity extends AppCompatActivity {
@@ -34,7 +38,9 @@ public class VideoPreviewActivity extends AppCompatActivity {
     private double longitude;
     private double latitude;
     StorageReference storageReference;
+    StorageReference thumbnailReference;
     String path;
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +53,9 @@ public class VideoPreviewActivity extends AppCompatActivity {
         longitude=Double.parseDouble(temp);
         temp=sharedPreferences.getString("latitude","0");
         latitude=Double.parseDouble(temp);
+        progressDialog = new ProgressDialog(this);
         storageReference= FirebaseStorage.getInstance().getReference();
+        thumbnailReference=storageReference.child("Thumbnails");
         VideoView videoView = (VideoView)findViewById(R.id.videoPreviewView);
         MediaController mc = new MediaController(this);
         videoView.setMediaController(mc);
@@ -59,13 +67,12 @@ public class VideoPreviewActivity extends AppCompatActivity {
 
     public void onShootClick(View view) {
         Long ts = System.currentTimeMillis() / 1000;
-        final Moment moment = new Moment(FirebaseAuth.getInstance().getUid(), longitude, true, latitude, ts);
         final DatabaseReference momentRef = FirebaseDatabase.getInstance().getReference().child("Moments").push();
-        String key = momentRef.getKey();
+        final String key = momentRef.getKey();
+        final Moment moment = new Moment(FirebaseAuth.getInstance().getUid(), longitude, true, latitude, ts);
         StorageReference momentStorageRef = storageReference.child("Moments/" + key + ".mp4");
         Uri file = Uri.fromFile(new File(path));
         UploadTask uploadTask = momentStorageRef.putFile(file);
-        final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Uploading");
         progressDialog.show();
 
@@ -81,9 +88,10 @@ public class VideoPreviewActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                progressDialog.dismiss();
-                Toast.makeText(VideoPreviewActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
-                finish();
+                momentRef.setValue(moment);
+               Bitmap bitmap= ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MINI_KIND);
+               uploadThumbnail(bitmap,key);
+
             }
         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -93,6 +101,31 @@ public class VideoPreviewActivity extends AppCompatActivity {
 
                 //displaying percentage in progress dialog
                 progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+            }
+        });
+
+    }
+
+    void uploadThumbnail(Bitmap bitmap,String key)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = thumbnailReference.child(key+".jpeg").putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                progressDialog.dismiss();
+                Toast.makeText(VideoPreviewActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
+                finish();
+                // ...
             }
         });
 

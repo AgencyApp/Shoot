@@ -12,7 +12,9 @@ import android.location.Location;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -50,6 +52,7 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     private boolean isFlashOn;
     private boolean isFrontFacing;
     UserLocation userLocation;
+   // Button button;
     SharedPreferences sharedPreferences;
     long fileId;
     String fileName;
@@ -69,6 +72,7 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         cameraView.mapGesture(Gesture.PINCH, GestureAction.ZOOM); // Pinch to zoom!
         cameraView.mapGesture(Gesture.TAP, GestureAction.FOCUS_WITH_MARKER); // Tap to focus!
         cameraView.setFacing(Facing.BACK);
+
         isFrontFacing=false;
         cameraView.setFlash(Flash.OFF);
         isFlashOn=false;
@@ -83,7 +87,15 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         });
 
         createNotificationChannel();
+/*        button.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction()==MotionEvent.ACTION_UP){
 
+                }
+                return false;
+            }
+        });*/
 
     }
 
@@ -251,6 +263,8 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
             openPlaceCallActivity();
         }
     }
+
+
 
     private void openPlaceCallActivity() {
         Intent mainActivity = new Intent(this, mainCallActivity.class);

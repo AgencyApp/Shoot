@@ -11,6 +11,7 @@ public class Moment {
     double latitude;
     long timeStamp;
 
+
     public Moment(String ownerId, double longitude, boolean isVideo, double latitude, long timeStamp) {
         this.ownerId = ownerId;
         this.longitude = longitude;
@@ -61,4 +62,6 @@ public class Moment {
     public void setVideo(boolean video) {
         isVideo = video;
     }
+
+
 }

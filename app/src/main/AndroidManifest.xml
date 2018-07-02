@@ -65,7 +65,7 @@
         <service android:name=".Services.SinchService" />
 
         <activity android:name=".Activities.PhoneActivity" />
-        <activity android:name=".Activities.LocalImages" />
+
 
 
         <activity android:name=".Activities.LocalImages"></activity>

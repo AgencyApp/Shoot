@@ -175,7 +175,7 @@ public class MomentActivity extends AppCompatActivity {
                     else{
 
                         StorageReference ref = storage.getReference().child("Moments/" + id + ".jpeg");
-                        Glide.with(MomentActivity.this).asBitmap().load(ref)
+                        Glide.with(getApplicationContext()).asBitmap().load(ref)
                                 .into(new SimpleTarget<Bitmap>() {
                                     @Override
                                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition)  {

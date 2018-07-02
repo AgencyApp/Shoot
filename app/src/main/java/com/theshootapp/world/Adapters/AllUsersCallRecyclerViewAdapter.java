@@ -62,7 +62,7 @@ public class AllUsersCallRecyclerViewAdapter extends RecyclerView.Adapter<AllUse
 
         //ProfilePicture.setProfilePicture(mValues.get(position).getUserId(), holder.mPicture);
         StorageReference ref = storage.getReference().child("UserDP/" + mValues.get(position).getUserId() + ".jpg");
-        Glide.with(c).load(ref).into(holder.mPicture);
+        Glide.with(c.getApplicationContext()).load(ref).into(holder.mPicture);
 
 
     }

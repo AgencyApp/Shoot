@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +48,8 @@ public class CustomView extends FrameLayout {
         storage = FirebaseStorage.getInstance();
     }
 
+
+
     public void display(final String url,final boolean isSelected) {
 
         final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -70,12 +73,12 @@ public class CustomView extends FrameLayout {
                         }
                     });*/
                     StorageReference ref = storage.getReference().child("Thumbnails/" + url + ".jpeg");
-                    Glide.with(c).load(ref).into(imageView);
+                    Glide.with(c.getApplicationContext()).load(ref).into(imageView);
 
                 }
                 else{
                     StorageReference ref = storage.getReference().child("Moments/" + url + ".jpeg");
-                    Glide.with(c).load(ref).into(imageView);
+                    Glide.with(c.getApplicationContext()).load(ref).into(imageView);
 
                 }
                 display(isSelected);

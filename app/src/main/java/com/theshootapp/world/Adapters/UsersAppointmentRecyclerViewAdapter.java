@@ -55,12 +55,12 @@ public class UsersAppointmentRecyclerViewAdapter extends RecyclerView.Adapter<Us
         {
             holder.mName.setText(mValues.get(position).getOtherName());
             StorageReference ref = storage.getReference().child("UserDP/" + mValues.get(position).getOtherUid() + ".jpg");
-            Glide.with(context).load(ref).into(holder.mPicture);
+            Glide.with(context.getApplicationContext()).load(ref).into(holder.mPicture);
         }
         else {
             holder.mName.setText(mValues.get(position).getSchedularName());
             StorageReference ref = storage.getReference().child("UserDP/" + mValues.get(position).getSchedularUid() + ".jpg");
-            Glide.with(context).load(ref).into(holder.mPicture);
+            Glide.with(context.getApplicationContext()).load(ref).into(holder.mPicture);
         }
         //TODO: Set Profile Picture using Glide
 

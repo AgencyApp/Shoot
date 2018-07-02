@@ -174,6 +174,7 @@ public class PhoneActivity extends AppCompatActivity implements OnListFragmentIn
                     UserProfile userProfile=dS.getValue(UserProfile.class);
                     friends.child(uID).setValue(true);
                     userMap.add(new User(uID,userProfile.getPhoneNumber(),userProfile.getName()));
+                    FirebaseDatabase.getInstance().getReference().child("Suggestions").child(currentUId).child(uID).removeValue();
                     //updateUi(uID);//TODO remove this function through proper UI
 
                 }

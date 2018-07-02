@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:background="@color/cardview_light_background"
+    android:foreground="?attr/selectableItemBackground"
+    android:padding="@dimen/simple_padding_large">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/user_dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="20dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        android:src="@drawable/logo"
+        app:civ_border_color="@color/colorPrimary"
+        app:civ_border_width="0.5dp" />
+
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="181dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="20dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:lines="1"
+        android:text="Carl"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_size_primary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/user_dp"
+        app:layout_constraintStart_toEndOf="@+id/user_dp" />
+
+    <ImageView
+        android:id="@+id/addSuggestion"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/user_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.642"
+        app:layout_constraintStart_toEndOf="@+id/user_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/add" />
+
+
+</android.support.constraint.ConstraintLayout>

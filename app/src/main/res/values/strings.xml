@@ -23,4 +23,6 @@
     <string name="add_contact">Add Contact</string>
     <string name="channel_name">Channel01</string>
     <string name="channel_description">Notification Channel</string>
+    <string name="name">Name</string>
+    <string name="proceed">Proceed</string>
 </resources>

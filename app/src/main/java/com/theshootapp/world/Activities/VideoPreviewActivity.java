@@ -61,8 +61,9 @@ public class VideoPreviewActivity extends AppCompatActivity {
         Long ts = System.currentTimeMillis() / 1000;
         final Moment moment = new Moment(FirebaseAuth.getInstance().getUid(), longitude, true, latitude, ts);
         final DatabaseReference momentRef = FirebaseDatabase.getInstance().getReference().child("Moments").push();
-        String key = momentRef.getKey();
-        StorageReference momentStorageRef = storageReference.child("Moments/" + key + ".mp4");
+        final String key = momentRef.getKey();
+
+        final StorageReference momentStorageRef = storageReference.child("Moments/" + key + ".mp4");
         Uri file = Uri.fromFile(new File(path));
         UploadTask uploadTask = momentStorageRef.putFile(file);
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -82,6 +83,7 @@ public class VideoPreviewActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 progressDialog.dismiss();
+                FirebaseDatabase.getInstance().getReference().child("Moments").child(key).setValue(moment);
                 Toast.makeText(VideoPreviewActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
                 finish();
             }

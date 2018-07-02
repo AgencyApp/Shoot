@@ -1,6 +1,7 @@
 package com.theshootapp.world.Adapters;
 
 
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -23,14 +24,14 @@ import com.theshootapp.world.R;
 import java.util.ArrayList;
 
 
-public class AllUsersCallRecyclerViewAdapter extends RecyclerView.Adapter<AllUsersCallRecyclerViewAdapter.ViewHolder> {
+public class SuggestionsRecyclerViewAdapter extends RecyclerView.Adapter<SuggestionsRecyclerViewAdapter.ViewHolder> {
 
     private final ArrayList<User> mValues;
     Context c;
     OnListFragmentInteractionListener mListener;
     FirebaseStorage storage;
 
-    public AllUsersCallRecyclerViewAdapter(ArrayList<User> items, Context context, OnListFragmentInteractionListener mListener) {
+    public SuggestionsRecyclerViewAdapter(ArrayList<User> items, Context context, OnListFragmentInteractionListener mListener) {
         mValues = items;
         c = context;
         this.mListener = mListener;
@@ -40,31 +41,30 @@ public class AllUsersCallRecyclerViewAdapter extends RecyclerView.Adapter<AllUse
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_user_simple, parent, false);
+                .inflate(R.layout.suggestion_item, parent, false);
         return new ViewHolder(view);
     }
 
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValues.get(position);
         holder.mName.setText(mValues.get(position).getName());
 
-        holder.mCall.setOnClickListener(new View.OnClickListener() {
+        holder.addSuggestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putString("receiverUid", holder.mItem.getUserId());
-                bundle.putString("receiverName", holder.mItem.getName());
-                mListener.onListFragmentInteraction(bundle, "chatMessage", true);
+                bundle.putString("personUid", holder.mItem.getUserId());
+                bundle.putString("personName", holder.mItem.getName());
+                bundle.putInt("personPosition", position);
+                mListener.onListFragmentInteraction(bundle, "suggestions", true);
             }
         });
 
         //ProfilePicture.setProfilePicture(mValues.get(position).getUserId(), holder.mPicture);
         StorageReference ref = storage.getReference().child("UserDP/" + mValues.get(position).getUserId() + ".jpg");
         Glide.with(c).load(ref).into(holder.mPicture);
-
-
     }
 
 
@@ -79,7 +79,7 @@ public class AllUsersCallRecyclerViewAdapter extends RecyclerView.Adapter<AllUse
         public final View mView;
         public final ImageView mPicture;
         public final TextView mName;
-        public final ImageView mCall;
+        public final ImageView addSuggestion;
         public User mItem;
 
 
@@ -88,7 +88,7 @@ public class AllUsersCallRecyclerViewAdapter extends RecyclerView.Adapter<AllUse
             mView = view;
             mPicture = view.findViewById(R.id.user_dp);
             mName = view.findViewById(R.id.user_name);
-            mCall = view.findViewById(R.id.imageView2);
+            addSuggestion = view.findViewById(R.id.addSuggestion);
         }
 
         @Override

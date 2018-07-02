@@ -30,7 +30,6 @@ import com.theshootapp.world.Database.MyFile;
 import com.theshootapp.world.ModelClasses.LocationModel;
 import com.theshootapp.world.R;
 import com.theshootapp.world.Services.SinchService;
-import com.theshootapp.world.Services.SuggestionFetcher;
 import com.theshootapp.world.Services.UserLocation;
 import com.theshootapp.world.Services.UserLocation24Hrs;
 

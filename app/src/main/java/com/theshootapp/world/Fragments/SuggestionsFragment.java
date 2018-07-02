@@ -11,6 +11,8 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.theshootapp.world.Adapters.AllUsersCallRecyclerViewAdapter;
+import com.theshootapp.world.Adapters.SuggestionsRecyclerViewAdapter;
+import com.theshootapp.world.Interfaces.OnListFragmentInteractionListener;
 import com.theshootapp.world.ModelClasses.User;
 import com.theshootapp.world.ModelClasses.UserProfile;
 import com.theshootapp.world.R;
@@ -32,7 +37,7 @@ import java.util.HashMap;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SuggestionsFragment extends Fragment {
+public class SuggestionsFragment extends Fragment implements OnListFragmentInteractionListener {
     SharedPreferences sharedPreferences;
     DatabaseReference userReference;
     DatabaseReference suggestions;
@@ -42,6 +47,9 @@ public class SuggestionsFragment extends Fragment {
     DatabaseReference friends;
     ArrayList<String> userProfiles;
     ArrayList<User>userSuggestions;
+    private SuggestionsRecyclerViewAdapter adapter;
+    OnListFragmentInteractionListener mListener;
+
     public SuggestionsFragment() {
     }
 
@@ -50,19 +58,28 @@ public class SuggestionsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_suggestions, container, false);
+        mListener = this;
 
         sharedPreferences =this.getActivity().getSharedPreferences("Suggestions",Context.MODE_PRIVATE);
         userReference= FirebaseDatabase.getInstance().getReference().child("User");
         currentUId=FirebaseAuth.getInstance().getUid();
         userMap=new HashMap<>();
         userSuggestionMap=new HashMap<>();
+        userSuggestions = new ArrayList<>();
         userProfiles=new ArrayList<>();
         friends=FirebaseDatabase.getInstance().getReference().child("UserFriends").child(currentUId);
         suggestions=FirebaseDatabase.getInstance().getReference().child("Suggestions").child(currentUId);
         boolean fetchContact=sharedPreferences.getBoolean("fetchContact",false);
+        RecyclerView recyclerView = view.findViewById(R.id.suggestions_user_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter = new SuggestionsRecyclerViewAdapter(userSuggestions, getActivity(), mListener);
+        recyclerView.setAdapter(adapter);
+
         new Async().execute();
         FetchSuggestions();
-       /* if(!fetchContact)
+
+
+        if(!fetchContact)
         {
             getShootFriends();
         }
@@ -70,7 +87,7 @@ public class SuggestionsFragment extends Fragment {
         {
             getShootFriends();
         }
-*/
+
 
         return view;
 
@@ -188,6 +205,15 @@ public class SuggestionsFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onListFragmentInteraction(Bundle details, String action, boolean isFabClicked) {
+        String uid = details.getString("personUid");
+        int position = details.getInt("personPosition");
+        friends.child(uid).setValue(true);
+        suggestions.child(uid).removeValue();
+        userSuggestions.remove(position);
+    }
+
 
     public class Async extends AsyncTask {
 
@@ -216,7 +242,7 @@ public class SuggestionsFragment extends Fragment {
                 {
                     if(!userSuggestionMap.containsKey(userProfiles.get(i))&&!userMap.containsKey(userProfiles.get(i)))
                     {
-                        suggestions.child(userProfiles.get(i)).setValue("true");
+                        suggestions.child(userProfiles.get(i)).setValue(true);
                     }
                 }
                 FetchSuggestions();
@@ -232,6 +258,8 @@ public class SuggestionsFragment extends Fragment {
 
     void FetchSuggestions()
     {
+        userSuggestions.clear();
+        adapter.notifyDataSetChanged();
         suggestions.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -248,7 +276,7 @@ public class SuggestionsFragment extends Fragment {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -270,7 +298,7 @@ public class SuggestionsFragment extends Fragment {
                 UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
                 User user= new User(dataSnapshot.getKey(),userProfile.getPhoneNumber(),userProfile.getName());
                 userSuggestions.add(user);
-               // adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
 
             }
 

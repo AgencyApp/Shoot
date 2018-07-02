@@ -63,13 +63,15 @@ public class CallFragment extends Fragment {
         userReference= FirebaseDatabase.getInstance().getReference().child("User");
         currentUId= FirebaseAuth.getInstance().getUid();
         friends=FirebaseDatabase.getInstance().getReference().child("UserFriends").child(currentUId);
-        UpdateShootFriend();
+
 
 
         RecyclerView recyclerView = view.findViewById(R.id.call_user_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new AllUsersCallRecyclerViewAdapter(userMap, getActivity(), mListener);
         recyclerView.setAdapter(adapter);
+
+        UpdateShootFriend();
         return view;
     }
 
@@ -92,6 +94,8 @@ public class CallFragment extends Fragment {
 
     void UpdateShootFriend()
     {
+        userMap.clear();
+        adapter.notifyDataSetChanged();
         friends.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {

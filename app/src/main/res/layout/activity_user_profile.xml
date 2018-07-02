@@ -15,7 +15,7 @@
         android:onClick="onPicClick"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/common_full_open_on_phone" />
+        app:srcCompat="@drawable/ic_person_black_24dp" />
 
     <EditText
         android:id="@+id/UserProfileName"
@@ -25,7 +25,7 @@
         android:layout_marginTop="82dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:hint="@string/name"
         app:layout_constraintStart_toEndOf="@+id/UserProfileImage"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +37,7 @@
         android:layout_marginEnd="148dp"
         android:layout_marginStart="148dp"
         android:onClick="onSaveClick"
-        android:text="Proceed"
+        android:text="@string/proceed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

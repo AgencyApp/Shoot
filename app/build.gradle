@@ -55,6 +55,7 @@ dependencies {
     compile project(':sinch-android-rtc-3.12.4')
     compile 'com.firebase:geofire-android:2.3.1'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
+    implementation 'com.github.mukeshsolanki:App-Runtime-Permissions-Android:1.0.7'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     implementation 'com.firebaseui:firebase-ui-storage:3.3.0'
     def room_version = "1.1.1"

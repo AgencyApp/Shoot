@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -34,11 +36,14 @@ import com.theshootapp.world.R;
 import com.theshootapp.world.Services.SinchService;
 import com.theshootapp.world.Services.UserLocation;
 import com.theshootapp.world.Services.UserLocation24Hrs;
+import com.theshootapp.world.Utility.PermissionResultCallback;
+import com.theshootapp.world.Utility.PermissionUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -51,7 +56,6 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     private boolean isFlashOn;
     private boolean isFrontFacing;
     UserLocation userLocation;
-   // Button button;
     SharedPreferences sharedPreferences;
     long fileId;
     String fileName;
@@ -60,6 +64,8 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         getSupportActionBar().hide();
+
+
        // Intent serviceIntent=new Intent(this,UserLocation.class);
         //startService(serviceIntent);
         Intent serviceIntent=new Intent(this,UserLocation24Hrs.class);
@@ -98,6 +104,8 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
 
     }
 
+
+
     @Override
     protected void onPause() {
         cameraView.stop();
@@ -110,6 +118,7 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         super.onStart();
         cameraView.start();
     }
+
     public void onPicClick(View view)
     {
         updateFileName();

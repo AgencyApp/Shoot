@@ -3,9 +3,12 @@ package com.theshootapp.world.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,14 +19,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.mukesh.permissions.AppPermissions;
+import com.theshootapp.world.Manifest;
 import com.theshootapp.world.R;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.theshootapp.world.ModelClasses.UserProfile;
+import com.theshootapp.world.Utility.PermissionResultCallback;
+import com.theshootapp.world.Utility.PermissionUtils;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity  {
     FirebaseAuth auth;
+    PermissionUtils permissionUtils;
+    ArrayList<String> permissions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +41,39 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
         auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
+        permissions=new ArrayList<>();
+        permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.add(android.Manifest.permission.CAMERA);
+        permissions.add(android.Manifest.permission.RECORD_AUDIO);
+        permissions.add(android.Manifest.permission.READ_CONTACTS);
+        permissions.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+        permissions.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        AppPermissions runtimePermission = new AppPermissions(this);
+       if (runtimePermission.hasPermission(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,android.Manifest.permission.CAMERA,android.Manifest.permission.RECORD_AUDIO,android.Manifest.permission.READ_CONTACTS,android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION}))
+       {
+           if (auth.getCurrentUser() != null) {
+               // already signed in
+               checkProfile();
+           } else {
+               startActivityForResult(
+                       AuthUI.getInstance()
+                               .createSignInIntentBuilder()
+                               .setAvailableProviders(Arrays.asList(
+                                       new AuthUI.IdpConfig.PhoneBuilder().build()
+                               ))
+                               .build(),
+                       123);
+           }
+
+       }
+       else
+           {
+
+               runtimePermission.requestPermission(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 256);
+           }
+
+
+      /* if (auth.getCurrentUser() != null) {
             // already signed in
             checkProfile();
         } else {
@@ -43,6 +85,34 @@ public class LoginActivity extends AppCompatActivity {
                             ))
                             .build(),
                     123);
+        }*/
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==256)
+        {
+            for (int grantResult : grantResults) {
+                if (grantResult == PackageManager.PERMISSION_DENIED) {
+                    finish();
+                    return;
+                }
+            }
+            if (auth.getCurrentUser() != null) {
+                // already signed in
+                checkProfile();
+            } else {
+                startActivityForResult(
+                        AuthUI.getInstance()
+                                .createSignInIntentBuilder()
+                                .setAvailableProviders(Arrays.asList(
+                                        new AuthUI.IdpConfig.PhoneBuilder().build()
+                                ))
+                                .build(),
+                        123);
+            }
         }
 
     }
@@ -90,5 +160,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

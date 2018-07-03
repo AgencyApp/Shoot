@@ -27,27 +27,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.theshootapp.world.ModelClasses.UserProfile;
-import com.theshootapp.world.Utility.PermissionResultCallback;
-import com.theshootapp.world.Utility.PermissionUtils;
-
 public class LoginActivity extends AppCompatActivity  {
     FirebaseAuth auth;
-    PermissionUtils permissionUtils;
-    ArrayList<String> permissions;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
         auth = FirebaseAuth.getInstance();
-        permissions=new ArrayList<>();
-        permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        permissions.add(android.Manifest.permission.CAMERA);
-        permissions.add(android.Manifest.permission.RECORD_AUDIO);
-        permissions.add(android.Manifest.permission.READ_CONTACTS);
-        permissions.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
-        permissions.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
         AppPermissions runtimePermission = new AppPermissions(this);
        if (runtimePermission.hasPermission(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,android.Manifest.permission.CAMERA,android.Manifest.permission.RECORD_AUDIO,android.Manifest.permission.READ_CONTACTS,android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION}))
        {

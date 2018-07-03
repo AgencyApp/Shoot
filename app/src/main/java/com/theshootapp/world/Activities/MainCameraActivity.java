@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -59,13 +63,24 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     SharedPreferences sharedPreferences;
     long fileId;
     String fileName;
+    ArrayList<String>files;
+    boolean isLongPress;
+    boolean burstDone;
+    boolean simpleClick;
+    ImageButton button;
+    private Timer mTimer1;
+    int count=0;
+    private TimerTask mTt1;
+    private Handler mTimerHandler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         getSupportActionBar().hide();
-
-
+        isLongPress=false;
+        burstDone=false;
+        simpleClick=false;
+        button=findViewById(R.id.imageButton2);
        // Intent serviceIntent=new Intent(this,UserLocation.class);
         //startService(serviceIntent);
         Intent serviceIntent=new Intent(this,UserLocation24Hrs.class);
@@ -77,7 +92,6 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         cameraView.mapGesture(Gesture.PINCH, GestureAction.ZOOM); // Pinch to zoom!
         cameraView.mapGesture(Gesture.TAP, GestureAction.FOCUS_WITH_MARKER); // Tap to focus!
         cameraView.setFacing(Facing.BACK);
-
         isFrontFacing=false;
         cameraView.setFlash(Flash.OFF);
         isFlashOn=false;
@@ -92,10 +106,27 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         });
 
         createNotificationChannel();
-/*        button.setOnTouchListener(new View.OnTouchListener() {
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                isLongPress=true;
+                files=new ArrayList<>();
+                count=0;
+                startTimer();
+                return false;
+            }
+        });
+      /* button.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction()==MotionEvent.ACTION_UP){
+                    if(isLongPress)
+                    {
+                        System.out.println("Stop" );
+                        stopTimer();
+                        burstDone=true;
+
+                    }
 
                 }
                 return false;
@@ -103,6 +134,34 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         });*/
 
     }
+
+
+    private void startTimer(){
+        mTimer1 = new Timer();
+        mTt1 = new TimerTask() {
+            public void run() {
+                mTimerHandler.post(new Runnable() {
+                    public void run(){
+                        updateFileName();
+                        count++;
+                        System.out.println(count);
+                        cameraView.captureSnapshot();
+                    }
+                });
+            }
+        };
+
+        mTimer1.schedule(mTt1, 1, 400);
+    }
+
+    private void stopTimer(){
+        if(mTimer1 != null){
+            mTimer1.cancel();
+            mTimer1.purge();
+        }
+    }
+
+
 
 
 
@@ -121,14 +180,44 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
 
     public void onPicClick(View view)
     {
-        updateFileName();
-        cameraView.capturePicture();
+        if(!isLongPress) {
+            System.out.println("Stop555" );
+             simpleClick=true;
+             updateFileName();
+            cameraView.capturePicture();
+        }
+        else {
+            isLongPress = false;
+            System.out.println("Stop" );
+            stopTimer();
+            burstDone=true;
+            updateFileName();
+            cameraView.captureSnapshot();
+        }
     }
     public void imageCaptured(byte[] jpeg) {
-        String filename=writeToFile(jpeg);
-        Intent intent = new Intent(this, PictureDisplay.class);
-        intent.putExtra("image",filename);
-        startActivity(intent);
+        if(simpleClick) {
+            simpleClick=false;
+            String filename = writeToFile(jpeg);
+            Intent intent = new Intent(this, PictureDisplay.class);
+            intent.putExtra("image", filename);
+            startActivity(intent);
+        }
+        else
+        {
+
+            files.add(writeToFile(jpeg));
+            if(burstDone)
+            {
+                    burstDone = false;
+                    //TODO Burst Pictures
+                    for (int i = 0; i < files.size(); i++) {
+                        System.out.println(files.get(i));
+                    }
+
+            }
+
+        }
     }
 
     public void onMomentClick(View v)

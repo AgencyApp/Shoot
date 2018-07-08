@@ -243,7 +243,7 @@ public class AddAppointment extends AppCompatActivity {
 
                         PendingIntent pintent = PendingIntent.getService(AddAppointment.this, notification_id, intent1, 0);
                         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-                        alarm.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pintent);
+                        alarm.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis()-1800000, pintent);
 
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putInt("notification_id",notification_id+1);

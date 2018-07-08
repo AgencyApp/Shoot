@@ -37,8 +37,7 @@ import com.theshootapp.world.R;
 import com.theshootapp.world.Services.SinchService;
 import com.theshootapp.world.Services.UserLocation;
 import com.theshootapp.world.Services.UserLocation24Hrs;
-import com.theshootapp.world.Utility.PermissionResultCallback;
-import com.theshootapp.world.Utility.PermissionUtils;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -210,10 +209,12 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
             if(burstDone)
             {
                     burstDone = false;
-                    //TODO Burst Pictures
-                    for (int i = 0; i < files.size(); i++) {
+                    Intent i = new Intent(this,BurstActivity.class);
+                    i.putStringArrayListExtra("files",files);
+                    /*for (int i = 0; i < files.size(); i++) {
                         System.out.println(files.get(i));
-                    }
+                    }*/
+                    startActivity(i);
 
             }
 

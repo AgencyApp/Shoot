@@ -146,7 +146,7 @@ public class PictureDisplay extends AppCompatActivity {
 
     void addPicToStorage()
     {
-        Toast.makeText(PictureDisplay.this, "Saving Picture", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Saving Picture", Toast.LENGTH_SHORT).show();
         new DatabaseAsyncTask(this).execute();
         finish();
     }

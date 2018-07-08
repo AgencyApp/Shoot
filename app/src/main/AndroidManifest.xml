@@ -7,16 +7,15 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-feature android:name="android.hardware.camera" />
 
-
-
     <application
+        android:name=".Activities.mApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -47,6 +46,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/picker_provider_paths" />
         </provider>
+
         <service android:name=".Services.InstanceIdGenerator">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -54,7 +54,8 @@
         </service>
         <service android:name=".Services.UserLocation" />
         <service android:name=".Services.UserLocation24Hrs" />
-        <service android:name=".Services.AppointmentNotificationService"/>
+        <service android:name=".Services.AppointmentNotificationService" />
+
         <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.mainCallActivity" />
         <activity android:name=".Activities.AddAppointment" />
@@ -65,14 +66,13 @@
         <service android:name=".Services.SinchService" />
 
         <activity android:name=".Activities.PhoneActivity" />
-
-
-
-        <activity android:name=".Activities.LocalImages"></activity>
+        <activity android:name=".Activities.LocalImages" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyA9UxtRN9OnOFC1hZublM3T1Rdcsz53V3c"/>
+            android:value="AIzaSyA9UxtRN9OnOFC1hZublM3T1Rdcsz53V3c" />
+
+        <activity android:name=".Activities.BurstActivity"></activity>
     </application>
 
 </manifest>

@@ -313,8 +313,10 @@ public class SuggestionsFragment extends Fragment implements OnListFragmentInter
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
                 User user= new User(dataSnapshot.getKey(),userProfile.getPhoneNumber(),userProfile.getName());
+                if(!userSuggestions.contains(user))
+                {
                 userSuggestions.add(user);
-                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();}
 
             }
 

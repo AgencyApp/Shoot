@@ -125,6 +125,8 @@ public class AppointmentNotificationService extends Service {
                             // Set the intent that will fire when the user taps the notification
                             .setContentIntent(pendingIntent)
                             .setAutoCancel(true);
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(c);
+                    notificationManager.notify(1, mBuilder.build());
                     return null ;
                 }
 
@@ -153,7 +155,7 @@ public class AppointmentNotificationService extends Service {
 
                 PendingIntent pintent = PendingIntent.getService(AppointmentNotificationService.this, notification_id+1, intent1, 0);
                 AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-                alarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+ 300*1000, pintent);
+                alarm.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+ 300*1000, pintent);
 
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt("notification_id",notification_id+2);

@@ -6,4 +6,9 @@
         android:title="@string/shoot_pictures"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/download_icon"
+        android:icon="@drawable/ic_file_download_white_24dp"
+        android:title="@string/save_moments"
+        app:showAsAction="ifRoom" />
 </menu>

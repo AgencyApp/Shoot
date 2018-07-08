@@ -137,8 +137,10 @@ public class CallFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
                 User user= new User(dataSnapshot.getKey(),userProfile.getPhoneNumber(),userProfile.getName());
-                userMap.add(user);
-                adapter.notifyDataSetChanged();
+                if(!userMap.contains(user)) {
+                    userMap.add(user);
+                    adapter.notifyDataSetChanged();
+                }
 
             }
 

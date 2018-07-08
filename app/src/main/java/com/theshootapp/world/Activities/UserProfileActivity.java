@@ -3,8 +3,10 @@ package com.theshootapp.world.Activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -53,7 +55,13 @@ public class UserProfileActivity extends AppCompatActivity implements IPickResul
 
     public void onSaveClick(View view)
     {
-        //Check for name and Picture
+        if(TextUtils.isEmpty(Name.getText().toString()))
+        {
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(R.id.userProfile), R.string.enter_name, Snackbar.LENGTH_LONG);
+            snackbar.show();
+            return;
+        }
         UploadPicture();
 
     }

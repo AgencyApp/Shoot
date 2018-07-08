@@ -17,13 +17,12 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getApplicationContext().bindService(new Intent(this, SinchService.class), this,
-                BIND_AUTO_CREATE);
+        getApplicationContext().bindService(new Intent(this, SinchService.class), this,BIND_AUTO_CREATE);
     }
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        if (SinchService.class.getName().equals(componentName.getClassName())) {
+       if (SinchService.class.getName().equals(componentName.getClassName())) {
             mSinchServiceInterface = (SinchService.SinchServiceInterface) iBinder;
             onServiceConnected();
         }

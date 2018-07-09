@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.sinch.android.rtc.ClientRegistration;
+import com.sinch.android.rtc.NotificationResult;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.SinchClientListener;
@@ -66,6 +67,7 @@ public class SinchService extends Service {
                     .environmentHost(ENVIRONMENT).build();
 
             mSinchClient.setSupportCalling(true);
+            mSinchClient.setSupportManagedPush(true);
             mSinchClient.startListeningOnActiveConnection();
 
             mSinchClient.addSinchClientListener(new MySinchClientListener());
@@ -106,6 +108,15 @@ public class SinchService extends Service {
             Map<String, String> name = new HashMap<>();
             name.put("name", Name);
             return mSinchClient.getCallClient().callUser(userId, name);
+        }
+        public NotificationResult relayRemotePushNotificationPayload(final Map payload) {
+            if (mSinchClient == null && !mSettings.getUsername().isEmpty()) {
+                startClient(mSettings.getUsername());
+            } else if (mSinchClient == null && mSettings.getUsername().isEmpty()) {
+                Log.e(TAG, "Can't start a SinchClient as no username is available, unable to relay push.");
+                return null;
+            }
+            return mSinchClient.relayRemotePushNotificationPayload(payload);
         }
 
         public String getUserName() {

@@ -1,8 +1,10 @@
 package com.theshootapp.world.Services;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.IBinder;
@@ -26,7 +28,7 @@ import io.nlopez.smartlocation.location.providers.LocationManagerProvider;
  * Created by hamza on 24-Jun-18.
  */
 
-public class UserLocation24Hrs extends Service {
+public class UserLocation24Hrs extends Service  {
    // Context context;
     DatabaseReference locationReference;
     SharedPreferences sharedPreferences;
@@ -75,4 +77,6 @@ public class UserLocation24Hrs extends Service {
         });
         return START_STICKY;
     }
+
+
 }

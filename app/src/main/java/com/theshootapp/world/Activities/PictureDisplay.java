@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,6 +104,15 @@ public class PictureDisplay extends AppCompatActivity {
 
             });
 
+            YoYo.with(Techniques.Flash)
+                    .duration(2000)
+                    .repeat(YoYo.INFINITE)
+                    .playOn(findViewById(R.id.imageView4));
+
+            YoYo.with(Techniques.Flash)
+                    .duration(2000)
+                    .repeat(YoYo.INFINITE)
+                    .playOn(findViewById(R.id.imageView5));
 
         }
 

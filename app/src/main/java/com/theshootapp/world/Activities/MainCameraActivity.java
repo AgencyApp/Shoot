@@ -304,10 +304,12 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
     {
         if (isFrontFacing) {
             cameraView.setFacing(Facing.BACK);
+            ((ImageButton)findViewById(R.id.imageButton9)).setImageResource(R.drawable.torch);
             isFrontFacing=false;
         }
         else {
             cameraView.setFacing(Facing.FRONT);
+            ((ImageButton)findViewById(R.id.imageButton9)).setImageResource(R.drawable.ic_camera_black_24dp);
             isFrontFacing=true;
         }
 

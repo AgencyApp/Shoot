@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -76,6 +78,11 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         getSupportActionBar().hide();
+        if(!SmartLocation.with(this).location().state().locationServicesEnabled())
+        {
+            DisplayAlert("Please Turn On Your Location to Enjoy","Location not avaliable");
+
+        }
         isLongPress=false;
         burstDone=false;
         simpleClick=false;
@@ -379,6 +386,26 @@ public class MainCameraActivity extends BaseActivity implements SinchService.Sta
         editor.putLong("fileId",fileId+1);
         editor.commit();
         fileName="file"+String.valueOf(fileId)+".jpeg";
+    }
+
+    void DisplayAlert(String message, String title)
+    {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
+
     }
 
 

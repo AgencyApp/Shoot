@@ -16,6 +16,7 @@ package com.theshootapp.world.Services;
         import com.sinch.android.rtc.SinchHelpers;
         import com.sinch.android.rtc.calling.CallNotificationResult;
         import com.theshootapp.world.Activities.LoginActivity;
+        import com.theshootapp.world.Activities.MomentActivity;
         import com.theshootapp.world.ModelClasses.UserProfile;
         import com.theshootapp.world.R;
 
@@ -26,6 +27,7 @@ package com.theshootapp.world.Services;
         import android.content.Context;
         import android.content.Intent;
         import android.content.ServiceConnection;
+        import android.graphics.BitmapFactory;
         import android.os.IBinder;
         import android.support.annotation.NonNull;
         import android.support.v4.app.NotificationCompat;
@@ -70,6 +72,17 @@ public class FcmListenerService extends FirebaseMessagingService {
                 }
             }.relayMessageData(data);
         }
+       else if(data!=null)
+        {
+            String s=(String)data.get("data_type");
+            if(s!=null) {
+                if (s.equals("shootMoment"))
+                {
+                    createNotification123(data);
+
+                }
+            }
+        }
     }
 
     private void createNotification(String userId) {
@@ -99,5 +112,25 @@ public class FcmListenerService extends FirebaseMessagingService {
             }
         });
 
+    }
+
+    private void createNotification123(Map payload) {
+
+        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                new Intent(getApplicationContext(), MomentActivity.class), 0);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.icon)
+                        .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                                R.drawable.logo))
+                        .setContentTitle((String)payload.get("title"))
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setContentText((String)payload.get("body"));
+        mBuilder.setContentIntent(contentIntent);
+        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+        mBuilder.setAutoCancel(true);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(1, mBuilder.build());
     }
 }

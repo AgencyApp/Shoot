@@ -70,6 +70,10 @@ public class MomentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moment);
+        if(FirebaseAuth.getInstance().getCurrentUser()==null)
+        {
+            startActivity(new Intent(this,LoginActivity.class));
+        }
         currentTime = System.currentTimeMillis() / 1000;
         databaseReference = FirebaseDatabase.getInstance().getReference().child("UserMoment").child(FirebaseAuth.getInstance().getUid());
         setTitle("Moments");

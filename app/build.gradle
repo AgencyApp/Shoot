@@ -62,6 +62,8 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     implementation 'com.daimajia.easing:library:2.0@aar'
+    compile 'com.daimajia.numberprogressbar:library:1.4@aar'
+    implementation 'com.github.d-max:spots-dialog:1.1@aar'
     implementation 'com.daimajia.androidanimations:library:2.3@aar'
 }
 

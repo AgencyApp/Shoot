@@ -1,5 +1,6 @@
 package com.theshootapp.world.Activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,12 +18,14 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.otaliastudios.cameraview.CameraUtils;
@@ -37,6 +41,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import dmax.dialog.SpotsDialog;
+
 public class PictureDisplay extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
@@ -47,6 +53,8 @@ public class PictureDisplay extends AppCompatActivity {
     Bitmap img;
     StorageReference storageReference;
     File imgFile;
+    AlertDialog alertDialog;
+
 
 
 
@@ -55,6 +63,7 @@ public class PictureDisplay extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_frame);
         getSupportActionBar().hide();
+        alertDialog = new SpotsDialog.Builder().setContext(this).setTheme(R.style.Custom).build();
         sharedPreferences=getSharedPreferences("location", Context.MODE_PRIVATE);
         String temp=sharedPreferences.getString("longitude","0");
         longitude=Double.parseDouble(temp);
@@ -120,6 +129,7 @@ public class PictureDisplay extends AppCompatActivity {
     }
     public void onShootClick()
     {
+        alertDialog.show();
         Long ts = System.currentTimeMillis() / 1000;
         final Moment moment=new Moment(FirebaseAuth.getInstance().getUid(),longitude,false,latitude,ts);
         final DatabaseReference momentRef=FirebaseDatabase.getInstance().getReference().child("Moments").push();
@@ -147,12 +157,14 @@ public class PictureDisplay extends AppCompatActivity {
                 // ...
                 momentRef.setValue(moment);
                 imgFile.delete();
-                Toast.makeText(PictureDisplay.this, "Shooting Picture!", Toast.LENGTH_SHORT).show();
+                alertDialog.dismiss();
+                finish();
+                Toast.makeText(PictureDisplay.this, "Picture Shooted!", Toast.LENGTH_SHORT).show();
 
             }
         });
 
-        finish();
+       // finish();
     }
 
     void addPicToStorage()
